@@ -6,7 +6,8 @@ with open("README.md", "r") as fh:
 setup(
     name="hazardEstimates",
     version="0.1",
-    packages=["Model", 'metrics', "raster_files", "Raster_Sets", "tif_datasets", "XY_Dataset"],
+    packages=find_packages(),
+    scripts=["Model.py", 'metrics.py', "raster_files.py", "Raster_Sets.py", "tif_datasets.py", "XY_Dataset.py"],
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
