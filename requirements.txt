@@ -13,7 +13,6 @@ defusedxml==0.6.0
 descartes==1.1.0
 entrypoints==0.3
 Fiona==1.8.13
-GDAL==3.0.4
 geopandas==0.7.0
 ggplot==0.11.5
 imageio==2.8.0
