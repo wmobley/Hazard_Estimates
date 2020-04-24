@@ -1,9 +1,7 @@
-import raster_files as rf
+from Hazard_Estimates import raster_files as rf
 import pandas as pd
-import psutil
 import numpy as np
-import metrics
-from copy import *
+
 
 class raster_sets:
     def __init__(self, files, storm=""):

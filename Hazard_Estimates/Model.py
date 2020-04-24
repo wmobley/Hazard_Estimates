@@ -1,12 +1,14 @@
 import os
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-import tif_datasets as tifs
-from metrics import *
-from XY_Dataset import *
+
+from Hazard_Estimates.metrics import *
+from Hazard_Estimates.XY_Dataset import *
 from joblib import dump, load
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
-import raster_files as rf
-import Raster_Sets as sets
+
+from Hazard_Estimates import Raster_Sets as sets
+
+
 def default_rescale_y(y, y_=""):
     '''place holder funciton. THis should be set up within the exposure model notebook.'''
     return y
