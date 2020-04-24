@@ -7,7 +7,7 @@ setup(
     name="hazardEstimates",
     version="0.1",
     packages=find_packages(),
-    scripts=["Model.py", 'metrics.py', "raster_files.py", "Raster_Sets.py", "tif_datasets.py", "XY_Dataset.py"],
+    #scripts=["Model.py", 'metrics.py', "raster_files.py", "Raster_Sets.py", "tif_datasets.py", "XY_Dataset.py"],
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
