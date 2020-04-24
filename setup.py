@@ -1,11 +1,10 @@
 from setuptools import setup, find_packages
-import setuptools
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="Hazard_Estimates",
+    name="hazardEstimates",
     version="0.1",
     packages=find_packages(),
     scripts=["Model.py", 'metrics.py', "raster_files.py", "Raster_Sets.py", "tif_datasets.py", "XY_Dataset.py"],
