@@ -78,7 +78,7 @@ class ascii_raster:
         Save file image
         :param asciiFile: 2d array
         :param location: Location to save the file
-        :param file: TFW file name to convert. 
+        :param file: TFW file name to convert.
         :return:
         '''
 
