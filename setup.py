@@ -11,7 +11,7 @@ setup(
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
-    install_requires=["scikit-learn", "numpy", "pandas", "rasterio","joblib"],
+    install_requires=["scikit-learn==0.22.2post1", "numpy", "pandas", "rasterio","joblib"],
 
 
     # metadata to display on PyPI
