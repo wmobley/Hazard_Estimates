@@ -1,6 +1,7 @@
-numpy
+
 Fiona
 rasterio
 pandas
 scikit-learn
 joblib
+numpy==1.16.4
