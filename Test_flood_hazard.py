@@ -1,6 +1,6 @@
 import time
 
-from Model import *
+from Hazard_Estimates.Model import *
 
 hucNumber = "_Houston"
 output = []

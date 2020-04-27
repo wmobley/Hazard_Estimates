@@ -18,60 +18,7 @@ class ascii_raster:
     def _init_(self, year=-9999):
 
         self.year = year
-    
-    # def ncols(self, ncols=()):
-    #     self.ncols = ncols
-    #
-    #
-    # def nrows(self, nrows=()):
-    #     self.nrows = nrows
-    #
-    #
-    # def xllcorner(self, xllcorner):
-    #     self.xllcorner = xllcorner
-    #
-    #
-    # def yllcorner(self, yllcorner):
-    #     self.yllcorner = yllcorner
-    #
-    #
-    # def cellszie(self, cellsize):
-    #     self.cellsize = cellsize
-    #
-    #
-    # def nodata(self, nodata):
-    #     self.nodata = nodata
-    #
-    #
-    # def asciiFile(self, asciiFile):
-    #     self.asciiFile = asciiFile
-    #
-    #
-    # def year(self, year):
-    #     self.year = year
-    #
-    # def src(self, src):
-    #     self.src = src
-    # @classmethod
-    # def load(self, args):
-    #     '''
-    #
-    #     :param args:
-    #     :return:
-    #     '''
-    #
-    #     dataAddress = args
-    #     """
-    #     Load Rasters
-    #     """
-    #
-    #     # if dataAddress.endswith("huc"): return
-    #     try:
-    #         raster = self.make_dataset(dataAddress)  # Load Raster make it 1-D
-    #     except Exception as e:
-    #         print (e)
-    #         return False
-    #     return raster
+
 
     def load(self, dataAddress):
         try:
