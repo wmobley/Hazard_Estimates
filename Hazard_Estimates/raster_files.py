@@ -1,6 +1,5 @@
 import numpy as np
 import rasterio
-import numba
 import os
 
 # Raster Ascii Datastructure
