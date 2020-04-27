@@ -92,7 +92,7 @@ class model_framework:
         '''
         self.equalize_train_test_columns()
         self.model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
-                                            min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
+                                            min_samples_split=3, min_samples_leaf=2, n_jobs=46)
         self.train.Y_['inundated'] = self.train.Y_.apply(lambda row: self.label_y(row['inundated']), axis=1)
 
         self.model.fit(self.train.X_[self.XColumns], self.train.Y_['inundated'] )
