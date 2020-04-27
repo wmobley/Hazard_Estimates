@@ -1,7 +1,8 @@
 import time
 
 from Hazard_Estimates.Model import *
-
+from matplotlib import pyplot
+import rasterio
 hucNumber = "_Houston"
 output = []
 
@@ -35,8 +36,15 @@ for hucNumber in [
     raster_sets.Convert_Dimensions()
     starti = time.time()
     raster_sets.generate_probability_raster(model=new_model.model,
-                                            location="probaility",
+                                            location="probability",
                                             ignore_column='demfill',
                                             nodata=32767
                                             , file=f"H:/HDM_Data/Spatial_Index/resample/huc{hucNumber}/demFill.tfw")
     print(f"Time per image: {time.time() - starti}")
+
+
+
+    src = rasterio.open("probability.tif")
+    pyplot.imshow(src.read(1), vmin=0,  vmax=1,  cmap='Blues')
+
+    pyplot.show()

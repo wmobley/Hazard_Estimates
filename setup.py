@@ -11,7 +11,7 @@ setup(
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
-    install_requires=["scikit-learn==0.22.2post1", "numpy", "pandas", "rasterio","joblib"],
+    install_requires=["scikit-learn==0.22.2post1", "sklearn", "matplotlib", "numpy", "pandas", "rasterio","joblib"],
 
 
     # metadata to display on PyPI
@@ -21,9 +21,9 @@ setup(
     keywords="hello world example examples",
     url="https://github.tamu.edu/wmobley/Hazard_Estimates",   # project home page, if any
     project_urls={
-        "Bug Tracker": "https://github.tamu.edu/wmobley/Hazard_Estimates/issues",
+        "Bug Tracker": "https://github.com/wmobley/Hazard_Estimates/issues",
         "Documentation": "tbd",
-        "Source Code": "https://github.tamu.edu/wmobley/Hazard_Estimates",
+        "Source Code": "https://github.com/wmobley/Hazard_Estimates",
     },
     classifiers=[
         "License :: OSI Approved :: Python Software Foundation License"
