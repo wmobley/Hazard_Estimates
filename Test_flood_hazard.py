@@ -22,7 +22,7 @@ files = [f.lower() for f in files]
 
 raster_location = "H:\HDM_Data\Spatial_Index/resample/huc"
 new_model = model_framework('Load Model', "huc", 'inundated', XColumns=files, file_location=raster_location)
-new_model.load_model("Flood_Hazard_Models/model.rf")
+new_model.load_model("H:\Hazard_Estimates\Flood_Hazard_Models\model.rf")
 
 
 y = 2017

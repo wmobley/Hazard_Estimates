@@ -15,12 +15,19 @@ import os
 # fileName = Name of File
 
 class ascii_raster:
+
+    ''' Raster Datastructure Built on Raster IO'''
     def _init_(self, year=-9999):
 
         self.year = year
 
 
     def load(self, dataAddress):
+        '''
+        Loads raster from the dataAdress. Specifically added files are
+        :param dataAddress: Location of the raster
+        :return:
+        '''
         try:
             self.fileName = (dataAddress.split("/")[-1])
 
@@ -41,14 +48,25 @@ class ascii_raster:
 
 
     def make_dataset_1D(self):
-
+        '''
+        convert from 2-d numpy array to 1-d.
+        :return:
+        '''
         self.asciiFile = self.asciiFile.flatten('C')
         return self
 
     def return_dataset_2d(self, nrows):
+        '''
+        convert from 1-d numpy array to 2-d.
+        :param nrows: Rows of initial dataset.
+        :return:
+        '''
+
         self.asciiFile = np.reshape(self.asciiFile, (nrows, -1))
         return self
+
     def get_raster_value(self, df_row):
+        ''' use Raster IO index to look up location. '''
         row, col = self.src.index(df_row.X, df_row.Y)
         try:
             return self.asciiFile[row, col]
@@ -56,7 +74,13 @@ class ascii_raster:
             return -9999
 
     def save_image(self, asciiFile,location, file):
-
+        '''
+        Save file image
+        :param asciiFile: 2d array
+        :param location: Location to save the file
+        :param file: TFW file name to convert. 
+        :return:
+        '''
 
         profile = {
             "driver": 'GTiff',

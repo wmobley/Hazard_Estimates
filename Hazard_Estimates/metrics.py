@@ -5,6 +5,9 @@ import pandas as pd
 import numpy as np
 
 class regression_metrics:
+    '''
+    Class Structure to house performance metrics for regresssions. Arrays are used for KFold analysis.
+    '''
     def __init__(self):
 
         self.r2 = []
@@ -17,9 +20,18 @@ class regression_metrics:
         self.oob = []
 
     def variable_removed(self, variable_removed):
+        ''' if variables are removed during KFolds this can be updated'''
         self.variable_removed = variable_removed
 
     def add_accuracies(self, data_structure, subset=False, loc=[], test=False):
+        '''
+
+        :param data_structure: Model Data structures
+        :param subset: If true use a subset of the X Y data
+        :param loc: If subset true this is a boolean array identifying which to use.
+        :param test: If True then use the test dataset else use training.
+        :return:
+        '''
         if data_structure.split_model == None:
             ''''''
             if test == True:
@@ -54,14 +66,7 @@ class regression_metrics:
                 if len(data.X_.loc[X_loc_]) > 0:
                     Y_.loc[X_loc_,'predict'] =  data_structure.rescale_y( data_structure.model[category].predict(data.X_[data_structure.XColumns].loc[X_loc_]),
                                                category)
-
-
-
-
-
         Y_.replace(np.nan, 0)
-
-
         Y_['diff'] =   Y_['predict'] - Y_['actual']
         Y_['percent_error'] = ((Y_['diff'] / Y_['actual']) * 100)
         Y_['percent_error'] = Y_['percent_error'].fillna(0)
@@ -77,6 +82,9 @@ class regression_metrics:
 
 
 class classification_metrics:
+    '''
+       Class Structure to house performance metrics for classification. Arrays are used for KFold analysis.
+       '''
     def __init__(self):
         self.variable_removed = []
         self.auc = []
@@ -86,10 +94,17 @@ class classification_metrics:
         self.accuracy = []
 
     def variable_removed(self, variable_removed):
+        ''' if variables are removed during KFolds this can be updated'''
         self.variable_removed.append(variable_removed)
 
 
     def add_accuracies(self, data_structure):
+        '''
+
+                :param data_structure: Model Data structures
+
+                :return:
+                '''
         data_structure.test.Y_['pred'] = data_structure.model.predict(data_structure.test.X_[data_structure.XColumns])
         prob = data_structure.model.predict_proba(data_structure.test.X_[data_structure.XColumns])
         data_structure.test.Y_['prob'] = split_probabilities(prob)
