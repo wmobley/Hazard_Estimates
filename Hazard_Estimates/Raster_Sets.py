@@ -81,7 +81,7 @@ class raster_sets:
         gc.collect()
         values = psutil.virtual_memory()
         chunks = 8*(int(df.memory_usage(deep=True).sum()/values.available)+1)
-        print(chunks)
+        print("chunks", chunks)
 
         split_data = np.array_split(df, chunks)
 
@@ -89,7 +89,7 @@ class raster_sets:
         predictions.asciiFile = np.array([])
         for data in split_data:
             predictions.asciiFile = np.concatenate( (predictions.asciiFile, np.where(data[ignore_column] != nodata, model.predict_proba(data)[:, 1], -9999)), axis=None)
-        print(predictions.asciiFile)
+        print("all predictions" , predictions.asciiFile)
 
         #
         gc.collect()
