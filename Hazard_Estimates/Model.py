@@ -4,7 +4,8 @@ from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from Hazard_Estimates.metrics import *
 from Hazard_Estimates.XY_Dataset import *
 from joblib import dump, load
-
+import psutil
+p = psutil.Process()
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
 from Hazard_Estimates import Raster_Sets as sets
@@ -92,7 +93,7 @@ class model_framework:
         '''
         self.equalize_train_test_columns()
         self.model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
-                                            min_samples_split=3, min_samples_leaf=2, n_jobs=1)
+                                            min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
         self.train.Y_['inundated'] = self.train.Y_.apply(lambda row: self.label_y(row['inundated']), axis=1)
 
         self.model.fit(self.train.X_[self.XColumns], self.train.Y_['inundated'] )

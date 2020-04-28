@@ -2,6 +2,8 @@ from Hazard_Estimates import raster_files as rf
 import pandas as pd
 import numpy as np
 import gc
+import psutil
+p = psutil.Process()
 
 class raster_sets:
     def __init__(self, files, storm=""):
@@ -77,7 +79,12 @@ class raster_sets:
         print(df.columns)
         predictions =  rf.ascii_raster()
         gc.collect()
-        predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
+        print(p.memory_info())
+        predictions.asciiFile =  model.predict_proba(df)[:, 1:]
+
+        # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
+        gc.collect()
+        print(p.memory_info())
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
         print()
