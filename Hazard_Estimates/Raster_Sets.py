@@ -83,13 +83,13 @@ class raster_sets:
         chunks = df.memory_usage(deep=True).sum()/values.available
         print(chunks)
         N_split=1000
-        split_data = np.array_split(df.values, N_split)
+        split_data = np.array_split(df.values, chunks)
         split_predicted = []
         for index , data in enumerate(split_data):
             if index%100==0:
                 print(data)
                 print(index)
-            split_predicted.append(  model.predict_proba(data)[:, 1:])
+            print( model.predict_proba(data))
 
         predictions.asciiFile = split_predicted
         # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
