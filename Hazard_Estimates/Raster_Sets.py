@@ -79,7 +79,9 @@ class raster_sets:
         print(df.columns)
         predictions =  rf.ascii_raster()
         gc.collect()
-        print(p.memory_percent())
+        values = p.memory_percent()
+        chunks = df.memory_usage(deep=True).sum()/values.available
+        print(chunks)
         N_split=1000
         split_data = np.array_split(df.values, N_split)
         split_predicted = []
