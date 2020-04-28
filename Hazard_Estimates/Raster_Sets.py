@@ -81,7 +81,7 @@ class raster_sets:
         gc.collect()
         print(p.memory_percent())
         N_split=1000
-        split_data = np.array_split(df, N_split)
+        split_data = np.array_split(df.values, N_split)
         split_predicted = []
         for index , data in enumerate(split_data):
             if index%100==0:
