@@ -80,7 +80,7 @@ class raster_sets:
         predictions =  rf.ascii_raster()
         gc.collect()
         values = psutil.virtual_memory()
-        chunks = df.memory_usage(deep=True).sum()/values.available
+        chunks = int(df.memory_usage(deep=True).sum()/values.available)+1
         print(chunks)
         N_split=1000
         split_data = np.array_split(df.values, chunks)
