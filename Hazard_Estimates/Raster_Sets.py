@@ -87,7 +87,7 @@ class raster_sets:
             if index%100==0:
                 print(data)
                 print(index)
-            split_predicted.extend(  model.predict_proba(data)[:, 1:])
+            split_predicted.append(  model.predict_proba(data)[:, 1:])
 
         predictions.asciiFile = split_predicted
         # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
