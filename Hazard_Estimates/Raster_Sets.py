@@ -80,8 +80,14 @@ class raster_sets:
         predictions =  rf.ascii_raster()
         gc.collect()
         print(p.memory_percent())
-        predictions.asciiFile =  model.predict_proba(df)[:, 1:]
+        N_split=1000
+        split_data = np.array_split(df, N_split)
+        split_predicted = []
+        for index , data in enumerate(split_data):
+            if index%100==0:print(index)
+            split_predicted.extend(  model.predict_proba(data)[:, 1:])
 
+        predictions.asciiFile = split_predicted
         # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
         gc.collect()
         print(p.memory_percent())
