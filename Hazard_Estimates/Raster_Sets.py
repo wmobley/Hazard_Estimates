@@ -79,12 +79,13 @@ class raster_sets:
         print(df.columns)
         predictions =  rf.ascii_raster()
         gc.collect()
-        print(p.memory_info())
+        print(p.memory_percent())
         predictions.asciiFile =  model.predict_proba(df)[:, 1:]
 
         # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
         gc.collect()
-        print(p.memory_info())
+        print(p.memory_percent())
+
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
         print()
