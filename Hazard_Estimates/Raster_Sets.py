@@ -84,7 +84,9 @@ class raster_sets:
         split_data = np.array_split(df, N_split)
         split_predicted = []
         for index , data in enumerate(split_data):
-            if index%100==0:print(index)
+            if index%100==0:
+                print(data)
+                print(index)
             split_predicted.extend(  model.predict_proba(data)[:, 1:])
 
         predictions.asciiFile = split_predicted
