@@ -76,23 +76,22 @@ class raster_sets:
         :return:
         '''
         df = self.make_dataframe()
-        print(df.columns)
+
         predictions =  rf.ascii_raster()
         gc.collect()
         values = psutil.virtual_memory()
         chunks = 8*(int(df.memory_usage(deep=True).sum()/values.available)+1)
         print(chunks)
-        N_split=1000
-        split_data = np.array_split(df.values, chunks)
-        split_predicted = []
-        for index , data in enumerate(split_data):
-            if index%100==0:
-                print(data[0])
-                print(index)
-            print( model.predict_proba(data))
+
+        split_data = np.array_split(df, chunks)
 
 
-        # predictions.asciiFile = np.where(df[ignore_column] != nodata, model.predict_proba(df)[:, 1], -9999)
+        predictions.asciiFile = np.array([])
+        for data in split_data:
+            predictions.asciiFile = np.concatenate( (predictions.asciiFile, np.where(data[ignore_column] != nodata, model.predict_proba(data)[:, 1], -9999)), axis=None)
+        print(predictions.asciiFile)
+
+        #
         gc.collect()
         print(p.memory_percent())
 
