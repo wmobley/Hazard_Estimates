@@ -90,8 +90,11 @@ class raster_sets:
 
         predictions.asciiFile = np.array([])
         for data in split_data:
-           
-            predictions.asciiFile = np.concatenate( (predictions.asciiFile, np.where(data[ignore_column] != nodata, model.predict_proba(data.values)[:, 1], -9999)), axis=None)
+
+            predictions.asciiFile = np.concatenate( (predictions.asciiFile, model.predict_proba(data.values)[:, 1]
+                                                     # np.where(data[ignore_column] != nodata,
+                                                     #     model.predict_proba(data.values)[:, 1], -9999))
+                                                    , axis=None)
         print("all predictions" , predictions.asciiFile)
 
         #
