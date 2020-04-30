@@ -82,9 +82,7 @@ class raster_sets:
         values = psutil.virtual_memory()
         chunks = (int(df.memory_usage(deep=True).sum()/values.available)+1)
 
-        # chunks = len(df)/1000
-        print("chunks", chunks)
-        print(p.memory_percent())
+
         split_data = np.array_split(df, chunks)
 
 
@@ -95,13 +93,12 @@ class raster_sets:
                                                      np.where(data[ignore_column] != nodata,
                                                          model.predict_proba(data.values)[:, 1], -9999))
                                                     , axis=None)
-        print("all predictions" , predictions.asciiFile)
+
 
         #
         gc.collect()
-        print(p.memory_percent())
+
 
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
-        print()
         self.rasters[0].save_image(predictions.asciiFile,location, file)
