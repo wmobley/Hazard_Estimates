@@ -55,19 +55,10 @@ class regression_metrics:
             else:
                 data = deepcopy(data_structure.train)
             Y_ = pd.DataFrame(index = data.X_.index)
-            Y_['actual'] = 0
-            Y_['predict'] = 0
-            for category in data.X_[data_structure.split_model].unique():
-                X_loc_ = data.X_[data_structure.split_model] == category
-                Y_.loc[X_loc_, 'actual'] = data_structure.rescale_y(
-                    data_structure.create_Y(data.X_, data_structure.YColumn, category),
-                    category)
 
-                if len(data.X_.loc[X_loc_]) > 0:
-                    Y_.loc[X_loc_,'predict'] =  data_structure.rescale_y( data_structure.model[category].predict(data.X_[data_structure.XColumns].loc[X_loc_]),
-                                               category)
+        Y_ = pd.DataFrame(data_structure.predict(data))
         Y_.replace(np.nan, 0)
-        Y_['diff'] =   Y_['predict'] - Y_['actual']
+        Y_['diff'] = Y_['predict'] - Y_['actual']
         Y_['percent_error'] = ((Y_['diff'] / Y_['actual']) * 100)
         Y_['percent_error'] = Y_['percent_error'].fillna(0)
 

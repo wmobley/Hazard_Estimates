@@ -93,7 +93,7 @@ class model_framework:
         '''
         self.equalize_train_test_columns()
         self.model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
-                                            min_samples_split=3, min_samples_leaf=2, n_jobs=1)
+                                            min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
         self.train.Y_['inundated'] = self.train.Y_.apply(lambda row: self.label_y(row['inundated']), axis=1)
 
         self.model.fit(self.train.X_[self.XColumns], self.train.Y_['inundated'] )
@@ -130,6 +130,8 @@ class model_framework:
             print(np.where(np.isnan(Y_))
                   )
 
+
+
     def set_up_continious(self, subset=False):
         '''
         Generates a dictionary of models.
@@ -151,8 +153,21 @@ class model_framework:
             self.fit_model(subset, 'All')
         self.add_metrics(False)
 
+    def predict(self, data):
+        Y_ = pd.DataFrame(index=data.X_.index)
+        Y_['actual'] = 0
+        Y_['predict'] = 0
+        for category in data.X_[self.split_model].unique():
+            X_loc_ = data.X_[self.split_model] == category
+            Y_.loc[X_loc_, 'actual'] = self.rescale_y(
+                self.create_Y(data.X_, self.YColumn, category),
+                category)
 
-
+            if len(data.X_.loc[X_loc_]) > 0:
+                Y_.loc[X_loc_, 'predict'] = self.rescale_y(
+                    self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),
+                    category)
+        return Y_
 
     def locate_and_load(self, spatial_index, dimension="2D"):
         ''' Locate and load rasters
@@ -164,10 +179,10 @@ class model_framework:
         '''
 
         fileLocation = "{}{}/".format(self.FileLocation, spatial_index)
-        print(fileLocation)
+
         files = [f'{fileLocation}{column}' if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
                      else f'{fileLocation}{column}2016' for column in self.XColumns]
-        print(files)
+
         if self.storm != "":
             files.extend([os.path.join(fileLocation, f"{self.storm}{hr}hr") for hr in [1, 2, 3, 4, 8, 12, 24]])
 

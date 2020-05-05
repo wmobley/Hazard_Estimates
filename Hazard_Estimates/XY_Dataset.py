@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import random as rand
+import Hazard_Estimates.metrics as metrics
+
 class X_Y:
     def __init__(self):
         """Independent and dependent variables"""
@@ -52,7 +54,7 @@ class X_Y:
         self.Add_XY_Values(data_structure, dataset)
 
         prob = hazardStructure.model.predict_proba(self.X_[hazardStructure.XColumns])
-        self.X_['flood_prob'] = hazardStructure.metrics.split_probabilities(prob)
+        self.X_['flood_prob'] = metrics.split_probabilities(prob)
         self.discrete = True
 
 

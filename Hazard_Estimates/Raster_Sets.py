@@ -62,10 +62,11 @@ class raster_sets:
         dataset = pd.DataFrame()
         for r in self.rasters:
             if r.fileName not in [0, '0']:
+                gc.collect()
                 dataset[r.fileName] = r.asciiFile
         return dataset
 
-    def generate_probability_raster(self, model, location, ignore_column, nodata, file):
+    def generate_probability_raster(self, model_structure, location, ignore_column, nodata, file):
         '''
 
         :param model: SKlearn Model
@@ -76,12 +77,12 @@ class raster_sets:
         :return:
         '''
         df = self.make_dataframe()
-
+        df = df[model_structure.XColumns]
         predictions =  rf.ascii_raster()
         gc.collect()
         values = psutil.virtual_memory()
-        chunks = (int(df.memory_usage(deep=True).sum()/values.available)+1)
-
+        chunks = (int(df.memory_usage(deep=True).sum()/values.available)+2)
+        print(chunks)
 
         split_data = np.array_split(df, chunks)
 
@@ -91,7 +92,7 @@ class raster_sets:
 
             predictions.asciiFile = np.concatenate( (predictions.asciiFile,
                                                      np.where(data[ignore_column] != nodata,
-                                                         model.predict_proba(data.values)[:, 1], -9999))
+                                                         model_structure.model.predict_proba(data.values)[:, 1], -9999))
                                                     , axis=None)
 
 
@@ -102,3 +103,4 @@ class raster_sets:
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
         self.rasters[0].save_image(predictions.asciiFile,location, file)
+        return predictions
