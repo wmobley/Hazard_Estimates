@@ -100,15 +100,15 @@ class ascii_raster:
         ) as dst:
             dst.write(asciiFile, 1)
 
-        with open(f"{location}.tfw", "w") as tfw:
-
-            for i, line in enumerate(file):
-                if i == 0:
-                    tfw.write("10.0\n")
-                elif i == 3:
-                    tfw.write("-10.0\n")
-                else:
-                    tfw.write(line)
+        # with open(f"{location}.tfw", "w") as tfw:
+        #
+        #     for i, line in enumerate(file):
+        #         if i == 0:
+        #             tfw.write("10.0\n")
+        #         elif i == 3:
+        #             tfw.write("-10.0\n")
+        #         else:
+        #             tfw.write(line)
 
         if os.path.exists(f"{location}.tif.ovr"):
             os.remove(f"{location}.tif.ovr")
