@@ -49,7 +49,11 @@ class model_framework:
         self.split_model = split_model
         self.create_Y = create_Y
         self.rescale_y = rescale_y
-
+        self.min = 1976
+        self.max = 2017
+    def min_max_years(self, year_column):
+        self.min = self.train.X_[year_column].min()
+        self.max = self.train.X_[year_column].max()
     def save_model(self, location):
         dump(self.model, location)
 

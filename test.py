@@ -1,16 +1,10 @@
-from sklearn.model_selection import KFold
-
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score,median_absolute_error
-from copy import *
 from copy import *
 
-from sklearn.metrics import mean_squared_error, r2_score, median_absolute_error
+import numpy as np
+import pandas as pd
 from sklearn.model_selection import KFold
 from sklearn.model_selection import train_test_split
-
-from Model import *
-
+from Hazard_Estimates import Model
 
 def create_y(df, YColumn, category):
     return np.sqrt(df[YColumn] / df['no_of_structures'])
@@ -51,7 +45,7 @@ files_hazard = [
     'AverageRoughness',
 ]
 file_location = r"H:\HDM_Data\Spatial_Index\resample\huc"
-flood_hazard = model_framework('rf', "huc8", 'adj_damage', files_hazard, file_location)
+flood_hazard = Model.model_framework('rf', "huc8", 'adj_damage', files_hazard, file_location)
 
 files_event = [
     'demFill',
@@ -64,7 +58,7 @@ files_event = [
     'AverageKSAT',
     'AverageRoughness',
 ]
-flood_event = model_framework('rf_event', "huc8", 'sum_17', files_event, file_location, "harvey")
+flood_event = Model.model_framework('rf_event', "huc8", 'sum_17', files_event, file_location, "harvey")
 
 dummy_vars = [
     # 'occupancy',
@@ -80,7 +74,7 @@ continuous = ['ffe', 'area',
               ]
 continuous.extend([f"{hr}hr" for hr in [1, 2, 4, 8, 24, ]])
 
-flood_exposure = model_framework('rf_exposure', "huc8", 'sum_17', continuous, file_location, "harvey",
+flood_exposure = Model.model_framework('rf_exposure', "huc8", 'sum_17', continuous, file_location, "harvey",
                                  split_model="occupancy", create_Y = create_y)
 for k, (cv_train, cv_test) in enumerate(k_fold.split(structures_train)):
 
