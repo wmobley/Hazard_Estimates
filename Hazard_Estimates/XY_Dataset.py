@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import random as rand
 import Hazard_Estimates.metrics as metrics
+from copy import *
 
 class X_Y:
     def __init__(self):
@@ -100,6 +101,7 @@ class X_Y:
         :param loc: Boolean Array for subest
         :return: List of new columns.
         '''
+
         if subset == True:
             self.X_ = self.X_.loc[loc]
 
@@ -117,6 +119,6 @@ class X_Y:
         :param discrete: Whether a categorical model should be used or a continuous regression.
 
         '''
-        self.X_ = x
-        self.Y_ = y
+        self.X_ = deepcopy(x)
+        self.Y_ = deepcopy(y)
         self.discrete = discrete
