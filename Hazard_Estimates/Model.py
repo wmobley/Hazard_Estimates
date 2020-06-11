@@ -182,10 +182,12 @@ class model_framework:
         :return: list of loaded rasters. Numpy array's and locations.
         '''
 
-        fileLocation = "{}{}/".format(self.FileLocation, spatial_index)
-        #
-        # files = [f'{fileLocation}{column}' if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
-        #              else f'{fileLocation}{column}2016' for column in self.XColumns]
+        fileLocation = r"{}\{}".format(self.FileLocation, spatial_index)
+
+        files = [f'{fileLocation}{column}'
+                 # if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
+                 #     else f'{fileLocation}{column}2016'
+                 for column in self.XColumns]
 
         if self.storm != "":
             files.extend([os.path.join(fileLocation, f"{self.storm}{hr}hr") for hr in [1, 2, 3, 4, 8, 12, 24]])
