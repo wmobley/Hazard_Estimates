@@ -69,7 +69,7 @@ class X_Y:
         :return:  X Y data for model
         '''
         s_index_series = dataset[data_structure.Spatial_Index]
-        if np.array_equal( s_index_series, s_index_series.astype(int)):
+        if s_index_series.apply(float.is_integer).all():
                 self.X_ = pd.concat(
                 [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
                                                 int(s_index)) for s_index in
