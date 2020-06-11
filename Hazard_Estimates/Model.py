@@ -203,6 +203,7 @@ class model_framework:
         :param hucNumber: Spatial index
         :return: Subset of dataframe with all raster variables added.
         '''
+        print(hucNumber)
         raster_sets = self.locate_and_load(hucNumber)
 
         for r in raster_sets.rasters:
