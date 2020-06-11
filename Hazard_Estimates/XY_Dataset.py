@@ -68,10 +68,18 @@ class X_Y:
         :param dataset: Sample of flooded non-flooded structures
         :return:  X Y data for model
         '''
-        self.X_ = pd.concat(
-            [data_structure.iterate_rasters(dataset.loc[dataset[data_structure.Spatial_Index] == int(s_index)],
-                                            int(s_index)) for s_index in
-             dataset[data_structure.Spatial_Index].unique()])
+        s_index_series = dataset[data_structure.Spatial_Index]
+        if np.array_equal( s_index_series, s_index_series.astype(int)):
+                self.X_ = pd.concat(
+                [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
+                                                int(s_index)) for s_index in
+                 s_index_series.unique()])
+        else:
+            s_index: str
+            self.X_ = pd.concat(
+                [data_structure.iterate_rasters(dataset.loc[s_index_series == s_index],
+                                                s_index) for s_index in
+                 s_index_series.unique()])
         for column in data_structure.XColumns:
             try:
                 self.X_ = self.X_.loc[self.X_[column] >= 0]
