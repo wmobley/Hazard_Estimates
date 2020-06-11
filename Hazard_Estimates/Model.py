@@ -184,7 +184,7 @@ class model_framework:
 
         fileLocation = r"{}\{}".format(self.FileLocation, spatial_index)
 
-        files = [f'{fileLocation}{column}'
+        files = [f'{fileLocation}\\{column}'
                  # if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
                  #     else f'{fileLocation}{column}2016'
                  for column in self.XColumns]
