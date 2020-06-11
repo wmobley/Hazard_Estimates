@@ -69,7 +69,15 @@ class X_Y:
         :return:  X Y data for model
         '''
         s_index_series = dataset[data_structure.Spatial_Index]
-        if all(x.is_integer() for x in s_index_series):
+
+        def RepresentsInt(s):
+            try:
+                int(s)
+                return True
+            except ValueError:
+                return False
+
+        if all(RepresentsInt(x) for x in s_index_series):
                 self.X_ = pd.concat(
                 [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
                                                 int(s_index)) for s_index in
