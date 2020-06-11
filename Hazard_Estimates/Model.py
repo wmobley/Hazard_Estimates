@@ -183,7 +183,7 @@ class model_framework:
         '''
 
         fileLocation = "{}{}/".format(self.FileLocation, spatial_index)
-
+        
         files = [f'{fileLocation}{column}' if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
                      else f'{fileLocation}{column}2016' for column in self.XColumns]
 
@@ -203,7 +203,7 @@ class model_framework:
         :param hucNumber: Spatial index
         :return: Subset of dataframe with all raster variables added.
         '''
-        print(hucNumber)
+
         raster_sets = self.locate_and_load(hucNumber)
 
         for r in raster_sets.rasters:
