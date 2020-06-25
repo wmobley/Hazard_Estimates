@@ -11,6 +11,12 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 from Hazard_Estimates import Raster_Sets as sets
 
 
+reg_model = RandomForestRegressor(n_estimators=125, criterion='mse', max_depth=25,
+                                                  min_samples_split=3, min_samples_leaf=2, random_state=42,
+                                                  n_jobs=-1)
+cat_model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
+                                            min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
+
 def default_rescale_y(y, y_=""):
     '''place holder funciton. THis should be set up within the exposure model notebook.'''
     return y
@@ -41,7 +47,7 @@ class model_framework:
         self.Spatial_Index = spatialIndex
         self.YColumn = ycolumn
         self.XColumns = XColumns
-
+        self.metrics = None
         self.storm = storm
         self.test = X_Y()
         self.train = X_Y()
@@ -68,15 +74,13 @@ class model_framework:
         '''
         self.model = model
 
-    def get_model(self, model_name):
+    def get_model(self, model_name, regression_model = reg_model):
         '''
 
         :param model_name: used for dictionary key
         :return: returns dictionary entry with key and random forest model.
         '''
-        return {model_name: RandomForestRegressor(n_estimators=125, criterion='mse', max_depth=25,
-                                                  min_samples_split=3, min_samples_leaf=2, random_state=42,
-                                                  n_jobs=-1)}
+        return {model_name: regression_model}
 
     def add_metrics(self, classification):
         '''
@@ -84,20 +88,20 @@ class model_framework:
         :param classification: Boolean that directs metrics
 
         '''
-        if classification:
-            self.metrics = classification_metrics()
-        else:
-            self.metrics = regression_metrics()
+        if self.metrics ==None:
+            if classification:
+                self.metrics = classification_metrics()
+            else:
+                self.metrics = regression_metrics()
 
-    def set_up_categorical(self):
+    def set_up_categorical(self, categorical_model = cat_model):
         '''
         Function used to add categorical model to the datastructure. Currently hard coded as a Random forest Datastructure.
         Add's metrics, and accuracies.
         :return:
         '''
         self.equalize_train_test_columns()
-        self.model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
-                                            min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
+        self.model = categorical_model
         self.train.Y_['inundated'] = self.train.Y_.apply(lambda row: self.label_y(row['inundated']), axis=1)
 
         self.model.fit(self.train.X_[self.XColumns], self.train.Y_['inundated'] )
