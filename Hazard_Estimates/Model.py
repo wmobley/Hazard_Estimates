@@ -47,6 +47,7 @@ class model_framework:
         self.Spatial_Index = spatialIndex
         self.YColumn = ycolumn
         self.XColumns = XColumns
+        self.Dynamic_rasters = None
         self.metrics = None
         self.storm = storm
         self.test = X_Y()
@@ -189,12 +190,12 @@ class model_framework:
         fileLocation = r"{}\{}".format(self.FileLocation, spatial_index)
 
         files = [f'{fileLocation}\\{column}'
-                 # if column.upper() not in ["AVERAGEROUGHNESS", "IMPERVIOUS"] \
-                 #     else f'{fileLocation}{column}2016'
+
                  for column in self.XColumns]
 
-        if self.storm != "":
-            files.extend([os.path.join(fileLocation, f"{self.storm}{hr}hr") for hr in [1, 2, 3, 4, 8, 12, 24]])
+        if self.Dynamic_rasters != None:
+            files.extend([os.path.join(fileLocation, f"{key['filename']}{key['time']}")
+                          for key in self.Dynamic_rasters])
 
         raster_sets = sets.raster_sets( files, self.storm)
 
