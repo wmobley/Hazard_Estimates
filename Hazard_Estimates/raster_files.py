@@ -40,6 +40,7 @@ class ascii_raster:
                 if self.fileName.endswith(str(y)):
                     self.fileName = self.fileName.split(str(y))[0]
                     self.year = y
+
             return self
 
         except Exception as e:

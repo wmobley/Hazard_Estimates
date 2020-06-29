@@ -162,6 +162,7 @@ class model_framework:
             self.fit_model(subset, 'All')
         self.add_metrics(False)
 
+
     def predict(self, data):
         Y_ = pd.DataFrame(index=data.X_.index)
         Y_['actual'] = 0
@@ -232,7 +233,13 @@ class model_framework:
         Makes sure that all test and training columns are the same if not add 0's. This will keep the model from breaking.
         :return:
         '''
-        for column in self.XColumns:
+        for column in self.train.X_.columns:
+            if column not in self.test.X_.columns:
+                self.test.X_[column] = 0
+
+            if column not in self.train.X_.columns:
+                self.train.X_[column] = 0
+        for column in self.test.X_.columns:
             if column not in self.test.X_.columns:
                 self.test.X_[column] = 0
 
