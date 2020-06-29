@@ -132,6 +132,7 @@ class model_framework:
         Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         try:
+            print(len(self.XColumns))
             self.model[key].fit(X_[self.XColumns], Y_)
         except:
             print(Y_)
@@ -168,7 +169,7 @@ class model_framework:
         Y_['actual'] = 0
         Y_['predict'] = 0
         for category in data.X_[self.split_model].unique():
-            print(len(self.XColumns))
+
             X_loc_ = data.X_[self.split_model] == category
             Y_.loc[X_loc_, 'actual'] = self.rescale_y(
                 self.create_Y(data.X_, self.YColumn, category),
