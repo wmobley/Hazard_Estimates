@@ -248,4 +248,6 @@ class model_framework:
             if column not in self.train.X_.columns:
                 self.train.X_[column] = 0
 
+        self.train.X_ = self.train.X_.loc[:, ~self.train.X_.columns.duplicated()]
 
+        self.test.X_=  self.test.X_.loc[:, ~self.test.X_.columns.duplicated()]
