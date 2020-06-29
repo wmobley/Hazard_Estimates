@@ -168,11 +168,12 @@ class model_framework:
         Y_['actual'] = 0
         Y_['predict'] = 0
         for category in data.X_[self.split_model].unique():
+            print(len(self.XColumns))
             X_loc_ = data.X_[self.split_model] == category
             Y_.loc[X_loc_, 'actual'] = self.rescale_y(
                 self.create_Y(data.X_, self.YColumn, category),
                 category)
-            print(len(self.XColumns))
+
             if len(data.X_.loc[X_loc_]) > 0:
                 Y_.loc[X_loc_, 'predict'] = self.rescale_y(
                     self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),
