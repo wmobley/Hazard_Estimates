@@ -176,9 +176,12 @@ class model_framework:
                 category)
 
             if len(data.X_.loc[X_loc_]) > 0:
-                Y_.loc[X_loc_, 'predict'] = self.rescale_y(
-                    self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),
-                    category)
+                try:
+                    Y_.loc[X_loc_, 'predict'] = self.rescale_y(
+                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),
+                        category)
+                except:
+                    Y_.loc[X_loc_, 'predict'] = -9999
         return Y_
 
     def locate_and_load(self, spatial_index, dimension="2D"):
