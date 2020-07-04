@@ -195,7 +195,7 @@ class model_framework:
 
         fileLocation = r"{}/{}".format(self.FileLocation, spatial_index)
 
-        files = [f'{fileLocation}\\{column}'
+        files = [f'{fileLocation}/{column}'
 
                  for column in self.XColumns]
 
