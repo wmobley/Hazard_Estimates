@@ -193,7 +193,7 @@ class model_framework:
         :return: list of loaded rasters. Numpy array's and locations.
         '''
 
-        fileLocation = r"{}\{}".format(self.FileLocation, spatial_index)
+        fileLocation = r"{}/{}".format(self.FileLocation, spatial_index)
 
         files = [f'{fileLocation}\\{column}'
 
