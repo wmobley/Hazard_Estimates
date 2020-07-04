@@ -29,7 +29,7 @@ class ascii_raster:
         :return:
         '''
         try:
-            self.fileName = (dataAddress.split("\\")[-1])
+            self.fileName = (dataAddress.split("/")[-1])
 
             self.src = rasterio.open(f"{dataAddress}.tif")
             self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
