@@ -66,7 +66,7 @@ class raster_sets:
                 dataset[r.fileName] = r.asciiFile
         return dataset
 
-    def generate_probability_raster(self, model_structure, location, ignore_column, nodata, file, Annualize = False):
+    def generate_probability_raster(self, model_structure, location, ignore_column, nodata, file, annualize = False):
         '''
 
         :param model: SKlearn Model
@@ -94,9 +94,11 @@ class raster_sets:
                                                      np.where(data[ignore_column] != nodata,
                                                          model_structure.model.predict_proba(data.values)[:, 1], -9999))
                                                     , axis=None)
-            if Annualize:
+            if annualize:
+                print(annualize)
                 predictions.asciiFile = np.where(predictions.asciiFile != -9999, 1 - (1 - predictions.asciiFile) ** (1 / (model_structure.max - model_structure.min + 1 )), -9999)
             else:
+
                 predictions.asciiFile = np.where(predictions.asciiFile != -9999,  predictions.asciiFile, -9999)
 
         #
