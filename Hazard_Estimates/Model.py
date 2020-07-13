@@ -200,7 +200,7 @@ class model_framework:
                  for column in self.XColumns]
 
         if self.Dynamic_rasters != None:
-            files.extend([os.path.join(fileLocation, f"{key['filename']}{key['time']}")
+            files.extend([f"{fileLocation}/{key['filename']}{key['time']}"
                           for key in self.Dynamic_rasters])
 
         raster_sets = sets.raster_sets( files, self.storm)
