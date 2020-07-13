@@ -54,7 +54,14 @@ class regression_metrics:
                 data = deepcopy(data_structure.test)
             else:
                 data = deepcopy(data_structure.train)
-            Y_ = pd.DataFrame(index = data.X_.index)
+            if not subset:
+                X_ = data.X_
+
+
+            else:
+
+                X_ = data.X_.loc[loc]
+            Y_ = X_.apply(lambda row: data_structure.create_Y(row, data_structure.YColumn, data_structure.split_model), axis=1)
 
         Y_ = pd.DataFrame(data_structure.predict(data))
         Y_.replace(np.nan, 0)
