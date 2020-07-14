@@ -171,18 +171,14 @@ class model_framework:
 
     def predict(self, data):
         Y_ = pd.DataFrame(index=data.X_.index)
-        Y_['actual'] = 0
+
         Y_['predict'] = 0
+        Y_.loc[ 'actual'] = self.rescale_y(
+            self.create_Y(data.X_, self.YColumn, self.split_model), data.X_,
+            self.split_model)
         for category in data.X_[self.split_model].unique():
 
             X_loc_ = data.X_[self.split_model] == category
-
-
-
-            Y_.loc[X_loc_, 'actual'] = self.rescale_y(
-                self.create_Y(data.X_, self.YColumn, self.split_model) ,data.X_,
-                self.split_model)
-
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
                     Y_.loc[X_loc_, 'predict'] = self.rescale_y(
