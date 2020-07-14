@@ -1,5 +1,5 @@
 from sklearn.metrics import accuracy_score, roc_auc_score, f1_score, recall_score, precision_score
-from sklearn.metrics import mean_squared_error, r2_score, median_absolute_error
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from copy import *
 import pandas as pd
 import numpy as np
@@ -72,9 +72,9 @@ class regression_metrics:
         Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         self.r2.append(r2_score(Y_['actual'], Y_['predict'] ))
-        self.median_percent.append(np.median(np.abs(Y_['percent_error'])))
+        self.median_percent.append(np.median((Y_['percent_error'])))
         self.mean_percent.append(np.sum(Y_['percent_error'] / len(Y_)))
-        self.mae.append(median_absolute_error(Y_['actual'], Y_['predict'] ))
+        self.mae.append(mean_absolute_error(Y_['actual'], Y_['predict'] ))
         self.mse.append(mean_squared_error(Y_['actual'], Y_['predict'] ))
         self.mbe.append(np.sum(Y_['predict']  - Y_['actual']) / len(Y_))
 
