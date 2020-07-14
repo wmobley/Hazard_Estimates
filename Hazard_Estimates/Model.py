@@ -180,14 +180,14 @@ class model_framework:
 
 
             Y_.loc[X_loc_, 'actual'] = self.rescale_y(
-                self.create_Y(data.X_, self.YColumn, self.split_model),self.YColumn,
-                category)
+                self.create_Y(data.X_, self.YColumn, self.split_model) ,data.X_,
+                self.split_model)
 
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
                     Y_.loc[X_loc_, 'predict'] = self.rescale_y(
-                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),self.YColumn,
-                        category)
+                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),data.X_,
+                        self.split_model)
                 except:
                     Y_.loc[X_loc_, 'predict'] = -9999
         return Y_
