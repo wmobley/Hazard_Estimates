@@ -127,12 +127,14 @@ class model_framework:
         else:
             X_ = self.train.X_.iloc[subset]
         X_ = X_.loc[X_[self.split_model] == key]
-        Y_ = self.create_Y(X_, self.YColumn, key)
+
+
+        Y_ = self.create_Y(X_, self.YColumn, self.split_model)
 
         Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         try:
-            print(len(self.XColumns))
+
             self.model[key].fit(X_[self.XColumns], Y_)
         except:
             print(Y_)
@@ -152,7 +154,9 @@ class model_framework:
 
         :return:
         '''
-        self.train.Y_ = self.train.X_.apply(lambda row: self.create_Y(row, self.YColumn,row[self.split_model]) ,axis=1)
+
+
+        self.train.Y_ =  self.create_Y(self.train.X_, self.YColumn,self.split_model)
         if self.split_model != None:
             self.Add_Model({})
             for category in self.train.X_[self.split_model].unique():
@@ -172,8 +176,11 @@ class model_framework:
         for category in data.X_[self.split_model].unique():
 
             X_loc_ = data.X_[self.split_model] == category
+
+
+
             Y_.loc[X_loc_, 'actual'] = self.rescale_y(
-                self.create_Y(data.X_, self.YColumn, category),
+                self.create_Y(data.X_, self.YColumn, self.split_model),
                 category)
 
             if len(data.X_.loc[X_loc_]) > 0:
