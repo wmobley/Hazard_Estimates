@@ -180,7 +180,7 @@ class model_framework:
 
 
             Y_.loc[X_loc_, 'actual'] = self.rescale_y(
-                self.create_Y(data.X_, self.YColumn, self.split_model),
+                self.create_Y(data.X_, self.YColumn, self.split_model),self.YColumn,
                 category)
 
             if len(data.X_.loc[X_loc_]) > 0:
