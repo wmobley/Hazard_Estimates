@@ -152,7 +152,7 @@ class model_framework:
 
         :return:
         '''
-        self.train.Y_ = self.train.X_.apply(lambda row: self.create_Y(row, row[self.YColumn],row[self.split_model]),axis=1)
+        self.train.Y_ = self.train.X_.apply(lambda row: self.create_Y(row, self.YColumn,row[self.split_model]) ,axis=1)
         if self.split_model != None:
             self.Add_Model({})
             for category in self.train.X_[self.split_model].unique():
