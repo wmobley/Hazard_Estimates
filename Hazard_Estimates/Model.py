@@ -186,7 +186,7 @@ class model_framework:
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
                     Y_.loc[X_loc_, 'predict'] = self.rescale_y(
-                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),data.X_,
+                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),data.X_.loc[X_loc_],
                         self.split_model)
                 except:
                     Y_.loc[X_loc_, 'predict'] = -9999
