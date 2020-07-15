@@ -180,11 +180,10 @@ class model_framework:
             X_loc_ = data.X_[self.split_model] == category
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
-                    Y_.loc[X_loc_, 'predict'] = self.rescale_y(
-                        self.model[category].predict(data.X_[self.XColumns].loc[X_loc_]),data.X_.loc[X_loc_],
-                        self.split_model)
+                    Y_.loc[X_loc_, 'predict'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
                 except:
                     Y_.loc[X_loc_, 'predict'] = -9999
+        Y_['predict']= self.rescale_y(  Y_['predict'], data.X_, self.split_model)
         return Y_
 
     def locate_and_load(self, spatial_index, dimension="2D"):
