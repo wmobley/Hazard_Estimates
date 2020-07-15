@@ -63,7 +63,7 @@ class regression_metrics:
                 X_ = data.X_.loc[loc]
 
 
-            Y_ = data_structure.create_Y(X_, data_structure.YColumn, data_structure.split_model)
+
 
         Y_ = pd.DataFrame(data_structure.predict(data))
         Y_.replace(np.nan, 0)

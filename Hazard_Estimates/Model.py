@@ -130,6 +130,7 @@ class model_framework:
 
 
         Y_ = self.create_Y(X_, self.YColumn, self.split_model)
+        print(np.max(Y_))
         Y_ = pd.Series(Y_)
         Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
@@ -156,7 +157,7 @@ class model_framework:
         '''
 
 
-        self.train.Y_ =  self.create_Y(self.train.X_, self.YColumn,self.split_model)
+        # self.train.Y_ =  self.create_Y(self.train.X_, self.YColumn,self.split_model)
         if self.split_model != None:
             self.Add_Model({})
             for category in self.train.X_[self.split_model].unique():
