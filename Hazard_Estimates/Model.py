@@ -130,7 +130,7 @@ class model_framework:
 
 
         Y_ = self.create_Y(X_, self.YColumn, self.split_model)
-        print(np.max(Y_))
+
         Y_ = pd.Series(Y_)
         Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
@@ -176,7 +176,7 @@ class model_framework:
         Y_[ 'actual'] =  self.create_Y(data.X_, self.YColumn, self.split_model)
         Y_['actual'] =   self.rescale_y(  Y_['actual'], data.X_, self.split_model)
         Y_['predict'] = 0
-        data.X_['predicted'] = -9999
+
         for category in data.X_[self.split_model].unique():
 
             X_loc_ = data.X_[self.split_model] == category
@@ -184,6 +184,7 @@ class model_framework:
                 try:
                     data.X_.loc[X_loc_, 'predicted'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
                 except:
+                    print("broken")
                     data.X_.loc[X_loc_, 'predicted'] = -9999
         Y_['predict']= self.rescale_y(  data.X_['predicted'], data.X_, self.split_model)
         return Y_
