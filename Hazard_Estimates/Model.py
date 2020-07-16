@@ -176,6 +176,7 @@ class model_framework:
         Y_[ 'actual'] =  self.create_Y(data.X_, self.YColumn, self.split_model)
         Y_['actual'] =   self.rescale_y(  Y_['actual'], data.X_, self.split_model)
         Y_['predict'] = 0
+        data.X_['predicted'] = -9999
         for category in data.X_[self.split_model].unique():
 
             X_loc_ = data.X_[self.split_model] == category
