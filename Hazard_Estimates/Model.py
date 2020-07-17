@@ -182,11 +182,11 @@ class model_framework:
             X_loc_ = data.X_[self.split_model] == category
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
-                    data.X_.loc[X_loc_, 'predicted'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
+                    Y_.loc[X_loc_, 'predicted'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
                 except:
                     print("broken")
-                    data.X_.loc[X_loc_, 'predicted'] = -9999
-        Y_['predict']= self.rescale_y(  data.X_['predicted'], data.X_, self.split_model)
+                    Y_.loc[X_loc_, 'predicted'] = -9999
+        Y_['predict']= self.rescale_y(  Y_['predicted'], data.X_, self.split_model)
         return Y_
 
     def locate_and_load(self, spatial_index, dimension="2D"):
