@@ -171,7 +171,7 @@ class model_framework:
 
 
     def predict(self, data):
-        Y_ = pd.DataFrame(index=data.X_.index)
+        Y_ = pd.DataFrame( index=data.X_.index.copy())
 
         Y_[ 'actual'] =  self.create_Y(data.X_, self.YColumn, self.split_model)
         Y_['actual'] =   self.rescale_y(  Y_['actual'], data.X_, self.split_model)
