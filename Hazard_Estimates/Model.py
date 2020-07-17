@@ -11,7 +11,7 @@ pd.set_option('display.float_format', lambda x: '%.3f' % x)
 from Hazard_Estimates import Raster_Sets as sets
 
 
-reg_model = RandomForestRegressor(n_estimators=125, criterion='mse', max_depth=25,
+reg_model = RandomForestRegressor(n_estimators=500, criterion='mse', max_depth=50,
                                                   min_samples_split=3, min_samples_leaf=2, random_state=42,
                                                   n_jobs=-1)
 cat_model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
