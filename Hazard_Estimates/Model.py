@@ -129,18 +129,18 @@ class model_framework:
         X_ = X_.loc[X_[self.split_model] == key]
 
         #
-        Y_ = self.create_Y(X_, self.YColumn, self.split_model)
-        print(pd.concat([X_[self.XColumns],Y_]).sort_values())
+        X_["y_col"] = self.create_Y(X_, self.YColumn, self.split_model)
+        print(X_[self.XColumns])
         # Y_ = pd.Series(Y_)
         # Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         try:
 
-            self.model[key].fit(X_[self.XColumns], Y_)
+            self.model[key].fit(X_[self.XColumns], X_["y"])
         except:
-            print(Y_)
-            print(Y_.max())
-            print(np.where(np.isnan(Y_))
+            print(X_["y_col"])
+            print(X_["y_col"].max())
+            print(np.where(np.isnan(X_["y_col"]))
                   )
 
 
