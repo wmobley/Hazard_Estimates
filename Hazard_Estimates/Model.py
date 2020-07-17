@@ -130,7 +130,7 @@ class model_framework:
 
         #
         X_["y_col"] = self.create_Y(X_, self.YColumn, self.split_model)
-        print(X_[self.XColumns])
+        print(X_)
         # Y_ = pd.Series(Y_)
         # Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
