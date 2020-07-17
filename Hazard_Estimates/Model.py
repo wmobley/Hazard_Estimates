@@ -128,11 +128,11 @@ class model_framework:
             X_ = self.train.X_.iloc[subset]
         X_ = X_.loc[X_[self.split_model] == key]
 
-
-        Y_ = self.create_Y(X_, self.YColumn, self.split_model)
-        print(Y_.sort_values())
-        Y_ = pd.Series(Y_)
-        Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
+        #
+        # Y_ = self.create_Y(X_, self.YColumn, self.split_model)
+        #
+        # Y_ = pd.Series(Y_)
+        # Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         try:
 
