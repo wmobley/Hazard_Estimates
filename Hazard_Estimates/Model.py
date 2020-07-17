@@ -136,7 +136,7 @@ class model_framework:
 
         try:
 
-            self.model[key].fit(X_[self.XColumns], X_["y"])
+            self.model[key].fit(X_[self.XColumns], X_["y_col"])
         except:
             print(X_["y_col"])
             print(X_["y_col"].max())
