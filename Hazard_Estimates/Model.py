@@ -179,7 +179,7 @@ class model_framework:
             X_loc_ = data.X_[self.split_model] == category
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
-                    print("subdivided:" ,key, data.X_.occupancy.unique())
+                    print("subdivided:" ,category, data.X_.occupancy.unique())
                     Y_.loc[X_loc_, 'predict'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
                 except:
                     print("broken")
