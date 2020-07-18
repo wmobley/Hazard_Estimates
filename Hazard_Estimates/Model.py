@@ -122,7 +122,7 @@ class model_framework:
         :return:
         '''
         self.equalize_train_test_columns()
-        if  subset==None:
+        if  subset.all()==None:
             X_ = self.train.X_
         else:
             X_ = subset
