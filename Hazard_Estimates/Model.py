@@ -122,10 +122,10 @@ class model_framework:
         :return:
         '''
         self.equalize_train_test_columns()
-        if not subset:
+        if  subset==None:
             X_ = self.train.X_
         else:
-            X_ = self.train.X_.iloc[subset]
+            X_ = subset
         X_ = X_.loc[X_[self.split_model] == key]
 
         #
@@ -143,9 +143,7 @@ class model_framework:
             print(np.where(np.isnan(X_["y_col"]))
                   )
 
-
-
-    def set_up_continious(self, subset=False):
+    def set_up_continious(self, subset=None):
         '''
         Generates a dictionary of models.
         If Split the dictionary is based on the split_model variable,
@@ -156,11 +154,10 @@ class model_framework:
         :return:
         '''
 
-
         # self.train.Y_ =  self.create_Y(self.train.X_, self.YColumn,self.split_model)
         if self.split_model != None:
             self.Add_Model({})
-            for category in self.train.X_[self.split_model].unique():
+            for category, subset in self.train.X_.groupby(self.split_model):
                 self.model.update(self.get_model(category))
                 self.fit_model(subset, category)
 
