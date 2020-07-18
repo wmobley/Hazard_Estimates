@@ -135,7 +135,7 @@ class model_framework:
         # Y_ = Y_.replace([np.inf, -np.inf, np.nan], 0)
 
         try:
-            print("subdivided:",X_.occupancy.unique())
+
             self.model[key].fit(X_[self.XColumns], X_["y_col"])
         except:
             print(X_["y_col"])
@@ -179,6 +179,7 @@ class model_framework:
             X_loc_ = data.X_[self.split_model] == category
             if len(data.X_.loc[X_loc_]) > 0:
                 try:
+                    print("subdivided:" ,key, data.X_.occupancy.unique())
                     Y_.loc[X_loc_, 'predict'] = self.model[category].predict(data.X_[self.XColumns].loc[X_loc_])
                 except:
                     print("broken")
