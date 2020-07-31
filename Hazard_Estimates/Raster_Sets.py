@@ -96,7 +96,7 @@ class raster_sets:
                                                     , axis=None)
             if annualize:
                 print(annualize)
-                predictions.asciiFile = np.where(predictions.asciiFile != -9999, 1 - (1 - predictions.asciiFile) ** (1 / (model_structure.max - model_structure.min + 1 )), -9999)
+                predictions.asciiFile = np.where(predictions.asciiFile != -9999, (1 - np.power((1 - predictions.asciiFile) , (1 / (model_structure.max - model_structure.min + 1 )))), -9999)
             else:
 
                 predictions.asciiFile = np.where(predictions.asciiFile != -9999,  predictions.asciiFile, -9999)
