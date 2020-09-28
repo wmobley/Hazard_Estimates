@@ -2,6 +2,8 @@ import numpy as np
 import rasterio
 import os
 
+from rasterio.warp import calculate_default_transform, reproject, Resampling
+
 # Raster Ascii Datastructure
 # Provides a structure to load an ESRI ascii file.
 # variables
@@ -113,3 +115,90 @@ class ascii_raster:
 
         if os.path.exists(f"{location}.tif.ovr"):
             os.remove(f"{location}.tif.ovr")
+
+
+
+def rescale(root, name, template="hand.tif"):
+    '''
+    Rescale a raster based on the
+    :param root: root directory
+    :param name: name of raster to be rescaled
+    :param template: Name of file used for rescale template. Defaults to Hand in the output folder.
+    :return: none
+    '''
+    with rasterio.open(os.path.join(root, template)) as mask:
+        # with rasterio.open(os.path.join(root, 'demfill.tif')) as mask2:
+        shape = [{'type': 'Polygon', 'coordinates': [[(mask.bounds.left, mask.bounds.top),
+                                                      (mask.bounds.left, mask.bounds.bottom),
+                                                      (mask.bounds.right, mask.bounds.bottom),
+                                                      (mask.bounds.right, mask.bounds.top)]]}]
+
+        with rasterio.open(os.path.join(root, "temp.tif")) as src:
+            # resample_raster(src, upscale_factor, huc, name)
+            transform, width, height = calculate_default_transform(
+                src.crs, mask.crs, mask.width, mask.height, *mask.bounds)
+            kwargs = src.meta.copy()
+            kwargs.update({
+                'crs': mask.crs,
+                'transform': transform,
+                'width': width,
+                'height': height,
+
+            })
+            with rasterio.open(os.path.join(root, name), 'w', **kwargs) as dst:
+                for i in range(1, src.count + 1):
+                    reproject(
+                        source=rasterio.band(src, i),
+                        destination=rasterio.band(dst, i),
+                        src_transform=src.transform,
+                        src_crs=src.crs,
+                        dst_transform=transform,
+                        dst_crs=mask.crs,
+                        resampling=Resampling.bilinear)
+    return None
+
+def safely_reduce_dtype(ser):  # pandas.Series or numpy.array
+    """
+    reduces dtype to lowest memory size
+    :param ser: Pandas series or array
+    :return: dtype
+    """
+    orig_dtype = "".join([x for x in ser.dtype.name if x.isalpha()])  # float/int
+    mx = 1
+
+    new_itemsize = np.min_scalar_type(ser).itemsize
+    if mx < new_itemsize:
+        mx = new_itemsize
+    new_dtype = orig_dtype + str(mx * 8)
+    return new_dtype
+
+
+def clip_to_boundary(in_directory, out_directory, boundary_geom,
+                     in_raster, out_raster, template = "hand.tif"):
+    '''
+
+    :param in_directory: root directory for original raster
+    :param out_directory: directory for new raster
+    :param boundary_geom: geomerty to clip
+    :param in_raster: initial raster
+    :param out_raster: File name to save new raster
+    :param template: Template file name loctated in the output directory.
+    :return:
+    '''
+    with rasterio.open(os.path.join(in_directory, in_raster)) as src:
+
+        out_image, out_transform = rasterio.mask.mask(src, boundary_geom, crop=True)
+        out_meta = src.meta
+        out_meta.update({"driver": "GTiff",
+                         "height": out_image.shape[1],
+                         "width": out_image.shape[2],
+                         "transform": out_transform,
+                         "dtype": safely_reduce_dtype(out_image)}
+                        )
+        if out_raster == template:
+            with rasterio.open(os.path.join(out_directory, out_raster), 'w', **out_meta) as dest:
+                dest.write(out_image)
+        elif template is not None:
+            with rasterio.open(os.path.join(out_directory, "temp.tif"), 'w', **out_meta) as dest:
+                dest.write(out_image)
+            rescale(out_directory, out_raster)

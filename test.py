@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from Hazard_Estimates.Model import *
 import multiprocessing
 
-hucNumber = 'huc12110205'
+hucNumber = 'huc12110202'
 n_jobs = -1
 
 
@@ -72,12 +72,12 @@ for y_column, storm, model in [( 'sum_17', 'Hanna',r'D:\OneDrive_Tamu\OneDrive -
     starti = time.time()
     flood_hazard.model.n_jobs = n_jobs
     raster_sets.rasters.append(raster_sets.generate_probability_raster(flood_hazard,
-                                                                       location=f"{storm}/FP_{hucNumber[3:]}",
+                                                                       location=f"{storm}/FP_a_{hucNumber[3:]}",
                                                                        ignore_column='hand',
                                                                        nodata=-9999
                                                                        ,
                                                                        file=f"{hucNumber}/dem.tfw",
-                                                                       annualize = True
+                                                                       annualize = False
                                                                        ),
                                )
 
