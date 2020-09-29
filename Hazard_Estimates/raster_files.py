@@ -3,6 +3,7 @@ import rasterio
 import os
 
 from rasterio.warp import calculate_default_transform, reproject, Resampling
+from rasterio.mask import mask
 
 # Raster Ascii Datastructure
 # Provides a structure to load an ESRI ascii file.
@@ -126,20 +127,20 @@ def rescale(root, name, template="hand.tif"):
     :param template: Name of file used for rescale template. Defaults to Hand in the output folder.
     :return: none
     '''
-    with rasterio.open(os.path.join(root, template)) as mask:
+    with rasterio.open(os.path.join(root, template)) as mask_file:
         # with rasterio.open(os.path.join(root, 'demfill.tif')) as mask2:
-        shape = [{'type': 'Polygon', 'coordinates': [[(mask.bounds.left, mask.bounds.top),
-                                                      (mask.bounds.left, mask.bounds.bottom),
-                                                      (mask.bounds.right, mask.bounds.bottom),
-                                                      (mask.bounds.right, mask.bounds.top)]]}]
+        shape = [{'type': 'Polygon', 'coordinates': [[(mask_file.bounds.left, mask_file.bounds.top),
+                                                      (mask_file.bounds.left, mask_file.bounds.bottom),
+                                                      (mask_file.bounds.right, mask_file.bounds.bottom),
+                                                      (mask_file.bounds.right, mask_file.bounds.top)]]}]
 
         with rasterio.open(os.path.join(root, "temp.tif")) as src:
             # resample_raster(src, upscale_factor, huc, name)
             transform, width, height = calculate_default_transform(
-                src.crs, mask.crs, mask.width, mask.height, *mask.bounds)
+                src.crs, mask_file.crs, mask_file.width, mask_file.height, *mask_file.bounds)
             kwargs = src.meta.copy()
             kwargs.update({
-                'crs': mask.crs,
+                'crs': mask_file.crs,
                 'transform': transform,
                 'width': width,
                 'height': height,
@@ -153,7 +154,7 @@ def rescale(root, name, template="hand.tif"):
                         src_transform=src.transform,
                         src_crs=src.crs,
                         dst_transform=transform,
-                        dst_crs=mask.crs,
+                        dst_crs=mask_file.crs,
                         resampling=Resampling.bilinear)
     return None
 
@@ -187,7 +188,7 @@ def clip_to_boundary(in_directory, out_directory, boundary_geom,
     '''
     with rasterio.open(os.path.join(in_directory, in_raster)) as src:
 
-        out_image, out_transform = rasterio.mask.mask(src, boundary_geom, crop=True)
+        out_image, out_transform = mask(src, boundary_geom, crop=True)
         out_meta = src.meta
         out_meta.update({"driver": "GTiff",
                          "height": out_image.shape[1],
