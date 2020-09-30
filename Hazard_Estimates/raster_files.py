@@ -4,7 +4,7 @@ import os
 
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.mask import mask
-
+from rasterio.crs import CRS
 # Raster Ascii Datastructure
 # Provides a structure to load an ESRI ascii file.
 # variables
@@ -203,3 +203,30 @@ def clip_to_boundary(in_directory, out_directory, boundary_geom,
             with rasterio.open(os.path.join(out_directory, "temp.tif"), 'w', **out_meta) as dest:
                 dest.write(out_image)
             rescale(out_directory, out_raster)
+
+def reproject(in_directory, out_directory,
+                                 in_raster, out_raster, template="hand.tif"):
+    with rasterio.open(os.path.join(out_directory, template)) as mask:
+        with rasterio.open(os.path.join(in_directory, in_raster)) as src:
+
+            transform, width, height = calculate_default_transform(
+                CRS.from_epsg(4326),
+                mask.crs, src.width, src.height, *src.bounds)
+            kwargs = src.meta.copy()
+            kwargs.update({
+                'crs': mask.crs,
+                'transform': transform,
+                'width': width,
+                'height': height
+            })
+
+
+            with rasterio.open(os.path.join(out_directory, out_raster), 'w', **kwargs) as dst:
+                reproject(
+                    source=rasterio.band(src, 0),
+                    destination=rasterio.band(dst, 0),
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=transform,
+                    dst_crs=mask.crs,
+                    resampling=Resampling.bilinear)
