@@ -204,7 +204,7 @@ def clip_to_boundary(in_directory, out_directory, boundary_geom,
                 dest.write(out_image)
             rescale(out_directory, out_raster)
 
-def reproject(in_directory, out_directory,
+def reproject_raster(in_directory, out_directory,
                                  in_raster, out_raster, template="hand.tif"):
     with rasterio.open(os.path.join(out_directory, template)) as mask:
         with rasterio.open(os.path.join(in_directory, in_raster)) as src:
