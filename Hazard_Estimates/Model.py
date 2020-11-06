@@ -58,9 +58,12 @@ class model_framework:
         self.rescale_y = rescale_y
         self.min = 1976
         self.max = 2017
+        self.variable_year_range = []
+
     def min_max_years(self, year_column):
         self.min = self.train.X_[year_column].min()
         self.max = self.train.X_[year_column].max()
+
     def save_model(self, location):
         dump(self.model, location)
 
@@ -187,7 +190,7 @@ class model_framework:
         Y_['predict']= self.rescale_y(  Y_['predict'], data.X_, self.split_model)
         return Y_
 
-    def locate_and_load(self, spatial_index, dimension="2D"):
+    def locate_and_load(self, spatial_index, year_to_load = None):
         ''' Locate and load rasters
         Create list of drivers and add precipitation variable if they exist.
         Load rasters then remove
@@ -201,12 +204,17 @@ class model_framework:
         files = [f'{fileLocation}/{column}'
 
                  for column in self.XColumns]
+        if year_to_load==None:
+            if self.Dynamic_rasters != None:
+                for key in self.Dynamic_rasters:
+                    for year in key['time']:
+                        files.append(f"{fileLocation}/{key['filename']}{year}")
 
-        if self.Dynamic_rasters != None:
-            files.extend([f"{fileLocation}/{key['filename']}{key['time']}"
-                          for key in self.Dynamic_rasters])
+                self.update_year_range()
+                year_to_load = self.variable_year_range
 
-        raster_sets = sets.raster_sets( files, self.storm)
+
+        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load)
 
         return raster_sets
 
@@ -257,3 +265,11 @@ class model_framework:
         self.train.X_ = self.train.X_.loc[:, ~self.train.X_.columns.duplicated()]
 
         self.test.X_=  self.test.X_.loc[:, ~self.test.X_.columns.duplicated()]
+
+
+    def update_year_range(self):
+        if self.Dynamic_rasters !=None:
+            for key in self.Dynamic_rasters:
+                for time in key['time']:
+                    self.variable_year_range.append(time)
+        self.variable_year_range = np.unique(self.variable_year_range)

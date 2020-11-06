@@ -25,7 +25,7 @@ class ascii_raster:
         self.year = year
 
 
-    def load(self, dataAddress):
+    def load(self, dataAddress, years = [2001, 2006, 2011, 2016]):
         '''
         Loads raster from the dataAdress. Specifically added files are
         :param dataAddress: Location of the raster
@@ -39,7 +39,7 @@ class ascii_raster:
             self.nrows = self.asciiFile.shape[0]
             self.ncols = self.asciiFile.shape[1]
             self.year = -9999
-            for y in [2001, 2006, 2011, 2016]:
+            for y in years:
                 if self.fileName.endswith(str(y)):
                     self.fileName = self.fileName.split(str(y))[0]
                     self.year = y

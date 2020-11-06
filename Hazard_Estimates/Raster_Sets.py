@@ -6,7 +6,7 @@ import psutil
 p = psutil.Process()
 
 class raster_sets:
-    def __init__(self, files, storm=""):
+    def __init__(self, files, storm="", year_range=[]):
         '''
         Initializes a dataset of rasters, loads them and prunes extraneous data.
         :param files:List of files to load
@@ -14,9 +14,9 @@ class raster_sets:
         '''
 
         self.storm = storm
+        self.year_range = year_range
         self.rasters = [self.load_rasters(file) for file in files]
         self.prune_falses()
-
     def prune_falses(self):
         '''
         removes any files that could not be loaded in the list.
@@ -33,7 +33,7 @@ class raster_sets:
         '''
         raster = rf.ascii_raster()
 
-        return raster.load(file)
+        return raster.load(file, years = self.year_range)
 
     def prefix(self, x):
         '''
@@ -66,7 +66,8 @@ class raster_sets:
                 dataset[r.fileName] = r.asciiFile
         return dataset
 
-    def generate_probability_raster(self, model_structure, location, ignore_column, nodata, file, annualize = False):
+    def generate_probability_raster(self, model_structure, location, ignore_column,
+                                    nodata, file,  annualize = False):
         '''
 
         :param model: SKlearn Model

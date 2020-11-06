@@ -42,10 +42,10 @@ files_hazard = [
 
     ]
 dynamic_raster = [
-        #     {'filename':'AverageRoughness',
-        #                   'time':2016},
+            {'filename':'AverageRoughness',
+                          'time':[2001,2016]},
         {'filename': 'impervious',
-         'time': 2016},
+         'time': [2016]},
     ]
 file_location = r"H:\HDM_Data\Spatial_Index"
 flood_hazard = model_framework( 'rf', "huc8",'adj_damage',files_hazard, file_location  )
