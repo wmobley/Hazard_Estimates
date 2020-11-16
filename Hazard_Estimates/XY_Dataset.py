@@ -31,17 +31,16 @@ class X_Y:
         :param claims_df:  Claims Dataframe
         :return: 1-1 Sample of of flooded non-flooded structures.
         '''
-        unique_attoms = df["attom"].unique()
-        sample = claims_df.loc[(claims_df["attom"].isin(unique_attoms)) & (claims_df.adj_damage > 0)]
-        sample = sample.rename(columns={'x': "X", 'y': 'Y', })
+
+        claims_df = claims_df.rename(columns={'x': "X", 'y': 'Y', })
 
         structure_sample = df.loc[df[data_structure.YColumn] == 0]
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
         structure_sample = structure_sample.sample(n=len(sample), replace=True, random_state=42)
         structure_sample['year_of_loss'] = structure_sample.apply(
-            lambda x: rand.randint(sample.year_of_loss.min(), sample.year_of_loss.max()), axis=1)
+            lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
 
-        return self.create_categorical_samples(pd.concat([sample[columns], structure_sample[columns]]), data_structure.YColumn, True)
+        return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True)
 
     def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, ):
         '''
