@@ -68,6 +68,7 @@ def rescale(root, name):
                         dst_transform=transform,
                         dst_crs=mask.crs,
                         resampling=Resampling.bilinear)
+    os.remove(os.path.join(root, "temp.tif"))
 
 
 def safely_reduce_dtype(ser):  # pandas.Series or numpy.array
@@ -94,7 +95,7 @@ def clip_to_boundary(in_directory, out_directory, boundary_geom,
                          "height": out_image.shape[1],
                          "width": out_image.shape[2],
                          "transform": out_transform,
-                         "dtype": safely_reduce_dtype(out_image)}
+                         "dtype":out_image.dtype}
                         )
         if out_raster == "hand.tif": #if the raster is a hand raster then it is the highest resolution so write the image otherwise rescale the image. 
             with rasterio.open(os.path.join(out_directory, out_raster), 'w', **out_meta) as dest:
@@ -124,7 +125,7 @@ def clip_roughness(directory, boundary, year):
                          })
         with rasterio.open(os.path.join(directory, f"roughness{year}.tif"), 'w', **out_meta) as dst:
             dst.write(img, 1)
-
+    os.remove(os.path.join(directory, f"Landcover{year}.tif"))
 
 def clip_twi(directory):
     #Calculate TWI based on slope and flow accumulation. 
@@ -146,7 +147,7 @@ def clip_twi(directory):
                 dst.write(img, 1)
 
 
-def weighted_accum( in_dir, weight, out_directory, out_raster):
+def weighted_accum( in_dir, weight, out_directory, out_raster, boundary_geom):
     #uses the pysheds library to calculate flow accumulation, however its weighted with by a given array. 
     with rasterio.open(os.path.join(out_directory, weight))as src:
         weights = src.read(1)
@@ -156,11 +157,13 @@ def weighted_accum( in_dir, weight, out_directory, out_raster):
         #
         # g.accumulation(data='dir', weights=weights, out_name='weights_accum')
         # grid.to_raster('weights_accum', os.path.join(out_directory, out_raster),dtype=np.int32)
-        print(dem)
+    
         accum = rd.FlowAccumulation(dem, method='D8', weights=weights.astype('float64') )
 
-        rd.SaveGDAL(os.path.join(out_directory, out_raster), accum)
-
+        rd.SaveGDAL(os.path.join(out_directory, "temp.tif"), accum)
+        clip_to_boundary(out_directory, out_dir, boundary_geom, f"temp.tif",
+                         out_raster)
+        # os.remove(os.path.join(out_dir, "temp.tif"))
 #Loop through each polygon in shapefile.
 for index in shapefile.index:
 
@@ -240,7 +243,7 @@ for index in shapefile.index:
                      f"ksat.tif")
     weighted_accum( out_dir,
                    "ksat.tif",
-                   out_dir, 'AverageKSAT.tif')
+                   out_dir, 'AverageKSAT.tif', geom)
 
     #Thesea are the dynamic rasters. Using Imperviousness and Landcover.
     #It iterates over each year, and then clips a given raster. Impervious 2016 was named different so it stands along
@@ -260,7 +263,7 @@ for index in shapefile.index:
 
         weighted_accum( out_dir,
                        f"roughness{i}.tif",
-                       out_dir, f'AverageRoughness{i}.tif')
+                       out_dir, f'AverageRoughness{i}.tif', geom)
 
     #These probabilistic precipitations. 12hr and 60 minutes. We use three probabilities 25, 100, and 500 year.
     for year in [25, 100, 500]:
@@ -281,13 +284,15 @@ for index in shapefile.index:
         #This is a check to ensure that coastlines exist in image and then calculates distance.
         if 0 in np.unique(img):
             img = ndimage.morphology.distance_transform_edt(img)
-            meta.update({"dtype": safely_reduce_dtype(img)})
+        meta.update({"dtype": "int16"})
+        out_img = img.astype("int16")
 
         with rasterio.open(os.path.join(out_dir, f"D{water}.tif"), 'w+', **meta) as out:
-            out.write_band(1, img.astype(meta["dtype"]))
+            out.write_band(1, out_img)
         clip_to_boundary(out_dir, out_dir, geom, f"D{water}.tif",
                          f"Distance2{water}.tif")
-
+        os.remove(os.path.join(out_dir, f"D{water}.tif"))
+        os.remove(os.path.join(out_dir,  f"{water}.tif"))
 
 def make_VRT(file, directory):
     sub_directories = [os.path.join(directory, name, file) for name in os.listdir(directory) if
@@ -317,3 +322,4 @@ for huc in shapefile.HUC12.apply(lambda row: row[:8]):
         'AverageKSAT.tif',
         'hand.tif']:
         make_VRT(file, dir)
+
