@@ -20,7 +20,7 @@ from rasterio.crs import CRS
 class ascii_raster:
 
     ''' Raster Datastructure Built on Raster IO'''
-    def _init_(self, year=-9999, extension=".tif"):
+    def __init__(self, year=-9999, extension=".tif"):
         self.extension = extension
         self.year = year
 
