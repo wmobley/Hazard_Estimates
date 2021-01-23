@@ -6,7 +6,7 @@ import psutil
 p = psutil.Process()
 
 class raster_sets:
-    def __init__(self, files, storm="", year_range=[]):
+    def __init__(self, files, storm="", year_range=[], extension=".tif"):
         '''
         Initializes a dataset of rasters, loads them and prunes extraneous data.
         :param files:List of files to load
@@ -17,6 +17,7 @@ class raster_sets:
         self.year_range = year_range
         self.rasters = [self.load_rasters(file) for file in files]
         self.prune_falses()
+        self.extension = extension
     def prune_falses(self):
         '''
         removes any files that could not be loaded in the list.
@@ -31,7 +32,7 @@ class raster_sets:
         :param file: Location of the file
         :return:
         '''
-        raster = rf.ascii_raster()
+        raster = rf.ascii_raster(extension = self.extension)
 
         return raster.load(file, years = self.year_range)
 

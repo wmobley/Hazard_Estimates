@@ -20,8 +20,8 @@ from rasterio.crs import CRS
 class ascii_raster:
 
     ''' Raster Datastructure Built on Raster IO'''
-    def _init_(self, year=-9999):
-
+    def _init_(self, year=-9999, extension=".tif"):
+        self.extension = extension
         self.year = year
 
 
@@ -34,7 +34,7 @@ class ascii_raster:
         try:
             self.fileName = (dataAddress.split("/")[-1])
 
-            self.src = rasterio.open(f"{dataAddress}.tif")
+            self.src = rasterio.open(f"{dataAddress}{self.extension}")
             self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
             self.nrows = self.asciiFile.shape[0]
             self.ncols = self.asciiFile.shape[1]

@@ -59,6 +59,10 @@ class model_framework:
         self.min = 1976
         self.max = 2017
         self.variable_year_range = []
+        self.raster_extension = ".tif"
+
+    def set_raster_extension(self, extension):
+        self.raster_extension = extension
 
     def min_max_years(self, year_column):
         self.min = self.train.X_[year_column].min()
@@ -214,7 +218,7 @@ class model_framework:
                 year_to_load = self.variable_year_range
 
 
-        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load)
+        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
 
         return raster_sets
 
