@@ -15,9 +15,10 @@ class raster_sets:
 
         self.storm = storm
         self.year_range = year_range
+        self.extension = extension
         self.rasters = [self.load_rasters(file) for file in files]
         self.prune_falses()
-        self.extension = extension
+
     def prune_falses(self):
         '''
         removes any files that could not be loaded in the list.
