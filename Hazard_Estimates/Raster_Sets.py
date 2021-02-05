@@ -95,15 +95,15 @@ class raster_sets:
 
             predictions.asciiFile = np.concatenate( (predictions.asciiFile,
                                                      np.where(data[ignore_column] != nodata,
-                                                         model_structure.model.predict_proba(data.values)[:, 1], -9999))
+                                                         model_structure.model.predict_proba(data.values)[:, 1], nodata))
                                                     , axis=None)
             gc.collect()
         if annualize:
             print(annualize)
-            predictions.asciiFile = np.where(predictions.asciiFile != -9999, (1 - np.power((1 - predictions.asciiFile) , (1 / (model_structure.max - model_structure.min + 1 )))), -9999)
+            predictions.asciiFile = np.where(predictions.asciiFile != nodata, (1 - np.power((1 - predictions.asciiFile) , (1 / (model_structure.max - model_structure.min + 1 )))), nodata)
         else:
 
-            predictions.asciiFile = np.where(predictions.asciiFile != -9999,  predictions.asciiFile, -9999)
+            predictions.asciiFile = np.where(predictions.asciiFile != nodata,  predictions.asciiFile, nodata)
 
         #
         gc.collect()
