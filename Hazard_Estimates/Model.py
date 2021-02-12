@@ -236,7 +236,7 @@ class model_framework:
 
         for r in raster_sets.rasters:
             dataset[r.fileName] = dataset.apply(lambda row: r.get_raster_value(row), axis=1)
-        print(dataset.columns)
+            print(r.fileName)
         if self.storm != "":
             ### makes sure that all precipitation variables have the same columns. THis will be important for future modelling.
             for hr in [1, 2, 3, 4, 8, 12, 24, 48, 96, 168]:
