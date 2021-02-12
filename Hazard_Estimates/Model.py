@@ -218,9 +218,9 @@ class model_framework:
                 self.update_year_range()
                 year_to_load = self.variable_year_range
 
-        print(files)
-        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
 
+        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
+        [print(r.fileName)for r in raster_sets]
         return raster_sets
 
 
