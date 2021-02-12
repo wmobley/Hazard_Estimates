@@ -217,7 +217,7 @@ class model_framework:
                 self.update_year_range()
                 year_to_load = self.variable_year_range
 
-
+        print(files)
         raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
 
         return raster_sets
@@ -236,7 +236,7 @@ class model_framework:
 
         for r in raster_sets.rasters:
             dataset[r.fileName] = dataset.apply(lambda row: r.get_raster_value(row), axis=1)
-            print(r.fileName)
+     
         if self.storm != "":
             ### makes sure that all precipitation variables have the same columns. THis will be important for future modelling.
             for hr in [1, 2, 3, 4, 8, 12, 24, 48, 96, 168]:
