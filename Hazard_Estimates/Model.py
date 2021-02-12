@@ -235,6 +235,7 @@ class model_framework:
         raster_sets = self.locate_and_load(hucNumber)
 
         for r in raster_sets.rasters:
+            print(r.fileName)
             dataset[r.fileName] = dataset.apply(lambda row: r.get_raster_value(row), axis=1)
 
         if self.storm != "":
