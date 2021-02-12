@@ -220,7 +220,7 @@ class model_framework:
 
 
         raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
-        [print(r.fileName)for r in raster_sets]
+        [print(r.fileName)for r in raster_sets.rasters]
         return raster_sets
 
 
