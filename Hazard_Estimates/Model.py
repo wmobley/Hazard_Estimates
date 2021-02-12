@@ -275,5 +275,6 @@ class model_framework:
         if self.Dynamic_rasters !=None:
             for key in self.Dynamic_rasters:
                 for time in key['time']:
+                    print(self.variable_year_range)
                     self.variable_year_range.append(time)
         self.variable_year_range = np.unique(self.variable_year_range)
