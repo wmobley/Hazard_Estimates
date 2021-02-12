@@ -32,6 +32,7 @@ class ascii_raster:
         :return:
         '''
         try:
+            print(dataAddress)
             self.fileName = (dataAddress.split("/")[-1])
 
             self.src = rasterio.open(f"{dataAddress}{self.extension}")
