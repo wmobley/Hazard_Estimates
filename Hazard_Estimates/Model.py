@@ -212,12 +212,13 @@ class model_framework:
             if self.Dynamic_rasters != None:
                 for key in self.Dynamic_rasters:
                     for year in key['time']:
+                        print(key['filename'])
                         files.append(f"{fileLocation}/{key['filename']}{year}")
 
                 self.update_year_range()
                 year_to_load = self.variable_year_range
 
-
+        print(files)
         raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
 
         return raster_sets
@@ -235,7 +236,7 @@ class model_framework:
         raster_sets = self.locate_and_load(hucNumber)
 
         for r in raster_sets.rasters:
-            print(r.fileName)
+
             dataset[r.fileName] = dataset.apply(lambda row: r.get_raster_value(row), axis=1)
 
         if self.storm != "":

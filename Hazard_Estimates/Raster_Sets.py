@@ -34,7 +34,7 @@ class raster_sets:
         :return:
         '''
         raster = rf.ascii_raster(extension = self.extension)
-
+        print("load raster", file)
         return raster.load(file, years = self.year_range)
 
     def prefix(self, x):
