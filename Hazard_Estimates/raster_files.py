@@ -32,7 +32,7 @@ class ascii_raster:
         :return:
         '''
         try:
-            print(dataAddress.split("/"))
+
             self.fileName = (dataAddress.split("/")[-1])
 
             self.src = rasterio.open(f"{dataAddress}{self.extension}")
@@ -44,7 +44,7 @@ class ascii_raster:
                 if self.fileName.endswith(str(y)):
                     self.fileName = self.fileName.split(str(y))[0]
                     self.year = y
-
+            print(self.fileName)
             return self
 
         except Exception as e:
