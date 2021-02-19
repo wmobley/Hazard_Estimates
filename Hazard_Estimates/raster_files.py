@@ -40,7 +40,7 @@ class ascii_raster:
             self.nrows = self.asciiFile.shape[0]
             self.ncols = self.asciiFile.shape[1]
             self.year = -9999
-            print(years, self.fileName)
+
             for y in years:
                 if self.fileName.endswith(str(y)):
                     self.fileName = self.fileName.split(str(y))[0]
