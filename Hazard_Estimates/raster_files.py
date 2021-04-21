@@ -20,22 +20,29 @@ from rasterio.crs import CRS
 class ascii_raster:
 
     ''' Raster Datastructure Built on Raster IO'''
-    def __init__(self, year=-9999, extension=".tif"):
+    def __init__(self,  dataAddress='',extension="", years= [2001, 2006, 2011, 2016],year=-9999,):
         self.extension = extension
+
         self.year = year
+        self.years= years
+        self.dataAddress = dataAddress
 
+        self.load(dataAddress=dataAddress,extension = self.extension, years=years)
+    def __reduce__(self):
+        return (self.__class__, (self.dataAddress, self.extension, self.years ))
 
-    def load(self, dataAddress, years = [2001, 2006, 2011, 2016]):
+    def load(self, dataAddress,extension, years = [2001, 2006, 2011, 2016], ):
         '''
         Loads raster from the dataAdress. Specifically added files are
         :param dataAddress: Location of the raster
         :return:
         '''
+
         try:
 
             self.fileName = (dataAddress.split("/")[-1])
 
-            self.src = rasterio.open(f"{dataAddress}{self.extension}")
+            self.src = rasterio.open(f"{dataAddress}{extension}")
             self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
             self.nrows = self.asciiFile.shape[0]
             self.ncols = self.asciiFile.shape[1]

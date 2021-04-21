@@ -24,7 +24,7 @@ def default_rescale_y(y, y_=""):
 
 class model_framework:
     def __init__(self, model_name, spatialIndex, ycolumn, XColumns, file_location, storm="", split_model=None,
-                 create_Y=None, rescale_y=default_rescale_y):
+                 create_Y=None, rescale_y=default_rescale_y, pool=None):
 
         """ Data structure for housing sklearn model. designed for predicitons on a Raster Dataset.
         The Structure uses a huc spatial index
@@ -60,6 +60,7 @@ class model_framework:
         self.max = 2017
         self.variable_year_range = []
         self.raster_extension = ".tif"
+        self.pool = pool
 
     def set_raster_extension(self, extension):
         self.raster_extension = extension
@@ -219,8 +220,8 @@ class model_framework:
                 year_to_load = self.variable_year_range
 
 
-        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension)
-        [print(r.fileName)for r in raster_sets.rasters]
+        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension, pool=self.pool)
+
         return raster_sets
 
 

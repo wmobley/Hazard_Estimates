@@ -2,11 +2,11 @@ from Hazard_Estimates import raster_files as rf
 import pandas as pd
 import numpy as np
 import gc
-import psutil
-p = psutil.Process()
+from multiprocessing import Pool
+from multiprocessing import cpu_count
 
 class raster_sets:
-    def __init__(self, files, storm="", year_range=[], extension=".tif"):
+    def __init__(self, files, storm="", year_range=[], extension=".tif", pool=None):
         '''
         Initializes a dataset of rasters, loads them and prunes extraneous data.
         :param files:List of files to load
@@ -16,7 +16,14 @@ class raster_sets:
         self.storm = storm
         self.year_range = year_range
         self.extension = extension
-        self.rasters = [self.load_rasters(file) for file in files]
+
+        self.rasters = []
+        if pool==None:
+            self.rasters = [self.load_rasters(file) for file in files]
+        else:
+
+            self.rasters.append(pool.map(self.load_rasters, files))
+            self.rasters=self.rasters[0]
         self.prune_falses()
 
     def prune_falses(self):
@@ -33,9 +40,9 @@ class raster_sets:
         :param file: Location of the file
         :return:
         '''
-        raster = rf.ascii_raster(extension = self.extension)
+        return rf.ascii_raster(extension = self.extension, dataAddress=file, years = self.year_range)
      
-        return raster.load(file, years = self.year_range)
+
 
     def prefix(self, x):
         '''
