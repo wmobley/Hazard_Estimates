@@ -48,8 +48,6 @@ for root, dirs, files in os.walk(r"C:\Users\wmobley\Downloads\huc12010001\huc120
 
 
 
-def make_rasters(r, p):
-    return Raster_Sets.raster_sets(files=r,extension='.vrt', pool=p)
 
 
 
@@ -65,14 +63,17 @@ def make_rasters(r, p):
 #
 #     all_data = p.map(handle_tiff, r)
 #
+
 if __name__=="__main__":
+    def make_rasters(r, p):
+        return Raster_Sets.raster_sets(files=r, extension='.vrt', pool=p)
     pool = Pool(cpu_count()- 1)
     print(rasters)
     start = time.time()
     (make_rasters(rasters, pool))
     print(time.time()-start)
     start = time.time()
-    print(make_rasters(rasters, None).__dict__)
+    print(make_rasters(rasters, None))
     print(time.time() - start)
     # print(timeit.timeit('make_rasters(rasters, None)', 'from __main__ import make_rasters, rasters, pool', number=5))
     # print(timeit.timeit('parallel_rasters(rasters,pool)', 'from __main__ import parallel_rasters, rasters,pool', number=5))

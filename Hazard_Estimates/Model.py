@@ -213,7 +213,7 @@ class model_framework:
             if self.Dynamic_rasters != None:
                 for key in self.Dynamic_rasters:
                     for year in key['time']:
-                        print(key['filename'])
+
                         files.append(f"{fileLocation}/{key['filename']}{year}")
 
                 self.update_year_range()

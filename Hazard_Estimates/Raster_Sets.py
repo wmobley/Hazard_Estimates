@@ -4,7 +4,7 @@ import numpy as np
 import gc
 from multiprocessing import Pool
 from multiprocessing import cpu_count
-
+import psutil
 class raster_sets:
     def __init__(self, files, storm="", year_range=[], extension=".tif", pool=None):
         '''
