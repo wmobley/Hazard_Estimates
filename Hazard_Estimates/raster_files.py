@@ -86,7 +86,7 @@ class ascii_raster:
         except:
             return -9999
 
-    def save_image(self, asciiFile,location, file):
+    def save_image(self, asciiFile,location, file, nodata):
         '''
         Save file image
         :param asciiFile: 2d array
@@ -103,7 +103,7 @@ class ascii_raster:
             'dtype': asciiFile.dtype,
             'transform': self.src.transform,
             'crs': self.src.crs,
-            'nodata': -9999
+            'nodata': nodata
         }
         with rasterio.open(
                f"{location}.tif",

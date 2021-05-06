@@ -118,5 +118,5 @@ class raster_sets:
 
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
-        self.rasters[0].save_image(predictions.asciiFile.astype("float32"),location, file)
+        self.rasters[0].save_image(predictions.asciiFile.astype("float32"),location, file, nodata)
         return predictions
