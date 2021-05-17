@@ -9,17 +9,17 @@ class X_Y:
     def __init__(self):
         """Independent and dependent variables"""
 
-    def flood_hazard_dataset_setup(self, data_structure, aggregated, point, sample=True):
+    def flood_hazard_dataset_setup(self, data_structure, population, focus, sample=True):
         '''
         Get Flood Hazard Sample
         Add XY Values
         :param data_structure: Model data structure.
-        :param aggregated: aggregated dataframe. Used for non-flooded areas
-        :param point: Point based data frame. Used for Flooded areas.
-        :param sample: Whether to use a subset of the null values or not. 
+        :param population: aggregated dataframe. Used for non-flooded areas
+        :param focus: Point based data frame. Used for Flooded areas.
+        :param sample: Whether to use a subset of the null values or not.
 
         '''
-        dataset = self.get_flood_hazard_sample(data_structure, aggregated, point, sample=sample)
+        dataset = self.get_flood_hazard_sample(data_structure, population, focus, sample=sample)
 
         self.Add_XY_Values(data_structure, dataset)
         self.discrete = True
@@ -39,7 +39,8 @@ class X_Y:
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
         if sample:
             structure_sample = df.sample(n=len(claims_df), replace=True, random_state=42)
-        else: structure_sample = df
+        else:
+            structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
 
