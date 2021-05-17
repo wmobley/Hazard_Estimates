@@ -23,7 +23,7 @@ class X_Y:
         self.Add_XY_Values(data_structure, dataset)
         self.discrete = True
 
-    def get_flood_hazard_sample(self, data_structure, df, claims_df):
+    def get_flood_hazard_sample(self, data_structure, df, claims_df, sample=True):
         '''
 
         :param data_structure: Model structure
@@ -36,7 +36,9 @@ class X_Y:
 
 
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
-        structure_sample = df.sample(n=len(claims_df), replace=True, random_state=42)
+        if sample:
+            structure_sample = df.sample(n=len(claims_df), replace=True, random_state=42)
+        else: structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
 
