@@ -38,6 +38,7 @@ class X_Y:
 
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
         if sample:
+            print(sample)
             structure_sample = df.sample(n=len(claims_df), replace=True, random_state=42)
         else:
             structure_sample = df
