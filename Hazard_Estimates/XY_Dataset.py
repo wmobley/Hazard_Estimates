@@ -9,16 +9,17 @@ class X_Y:
     def __init__(self):
         """Independent and dependent variables"""
 
-    def flood_hazard_dataset_setup(self, data_structure, aggregated, point):
+    def flood_hazard_dataset_setup(self, data_structure, aggregated, point, sample=True):
         '''
         Get Flood Hazard Sample
         Add XY Values
         :param data_structure: Model data structure.
         :param aggregated: aggregated dataframe. Used for non-flooded areas
         :param point: Point based data frame. Used for Flooded areas.
+        :param sample: Whether to use a subset of the null values or not. 
 
         '''
-        dataset = self.get_flood_hazard_sample(data_structure, aggregated, point)
+        dataset = self.get_flood_hazard_sample(data_structure, aggregated, point, sample=sample)
 
         self.Add_XY_Values(data_structure, dataset)
         self.discrete = True
