@@ -37,11 +37,12 @@ class X_Y:
 
 
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
-        print(sample)
-        if sample:
 
+        if sample:
+            print("sample",sample)
             structure_sample = df.sample(n=len(claims_df), replace=True, random_state=42)
         else:
+
             structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
