@@ -39,7 +39,7 @@ class X_Y:
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
         structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
-            lambda x: rand.randint(structure_sample.year_of_loss.min(), structure_sample.year_of_loss.max()), axis=1)
+            lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
         return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True, sample)
 
     def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, ):
