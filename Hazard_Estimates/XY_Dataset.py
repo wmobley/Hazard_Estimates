@@ -38,6 +38,8 @@ class X_Y:
 
         columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
         structure_sample = df
+        structure_sample['year_of_loss'] = structure_sample.apply(
+            lambda x: rand.randint(structure_sample.year_of_loss.min(), structure_sample.year_of_loss.max()), axis=1)
         return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True, sample)
 
     def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, ):
@@ -107,8 +109,7 @@ class X_Y:
             absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset), replace=replacement, random_state=42)
         else:
             absence_dataset = df.loc[df[column] == 0]
-        absence_dataset['year_of_loss'] = absence_dataset.apply(
-            lambda x: rand.randint(presence_dataset.year_of_loss.min(), presence_dataset.year_of_loss.max()), axis=1)
+
         return pd.concat([presence_dataset, absence_dataset])
 
     def exposure_dataset_setup(self, exposure_structure, subset=False, loc=[]):
