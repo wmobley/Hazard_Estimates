@@ -42,7 +42,7 @@ class X_Y:
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
         return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True, sample)
 
-    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, ):
+    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, sample=sample ):
         '''
         Similar to Flood_hazard_dataset_setup. Uses one Dataframe for flooded/ non-flooded.
         :param data_structure:  Model structure
@@ -50,7 +50,7 @@ class X_Y:
         :param hazardStructure: Model Structure from flood hazard used to predict flood hazard on new sample
         :return:
         '''
-        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False)
+        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False, sample)
         self.Add_XY_Values(data_structure, dataset)
 
         prob = hazardStructure.model.predict_proba(self.X_[hazardStructure.XColumns])
