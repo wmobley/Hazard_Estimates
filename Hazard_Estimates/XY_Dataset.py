@@ -116,10 +116,11 @@ class X_Y:
         :return: a 1-1 Sample of flooded and non-flooded structures.
         '''
         presence_dataset = df.loc[df[column] > 0]
+        print( len(presence_dataset), self.minSampling, self.ratio)
         if self.sample:
 
             if len(presence_dataset)<self.minSampling:
-                print( len(presence_dataset), self.minSampling, self.ratio)
+
                 absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset)*self.ratio,
                                                                  replace=replacement, random_state=42)
             else:
