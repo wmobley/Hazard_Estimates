@@ -14,7 +14,7 @@ from Hazard_Estimates import Raster_Sets as sets
 reg_model = RandomForestRegressor(n_estimators=100, criterion='mse', max_depth=90,
                                                   min_samples_split=3, min_samples_leaf=2, random_state=42,
                                                   n_jobs=-1)
-cat_model = RandomForestClassifier(n_estimators=100, criterion="gini", max_depth=90,
+cat_model = RandomForestClassifier(n_estimators=200, criterion="gini", max_depth=90,
                                             min_samples_split=3, min_samples_leaf=2, n_jobs=-1)
 
 def default_rescale_y(y, y_=""):

@@ -8,8 +8,20 @@ from copy import *
 class X_Y:
     def __init__(self):
         """Independent and dependent variables"""
+        self.sample=True
+        self.ratio = 1
+        self.minSampling = -9999
 
-    def flood_hazard_dataset_setup(self, data_structure, population, focus, sample=True):
+    def set_sample(self, sample):
+        self.sample=sample
+
+    def set_ratio(self, ratio):
+        self.ratio = ratio
+
+    def set_minSampling(self, min):
+        self.minSampling=min
+
+    def flood_hazard_dataset_setup(self, data_structure, population, focus):
         '''
         Get Flood Hazard Sample
         Add XY Values
@@ -19,7 +31,7 @@ class X_Y:
         :param sample: Whether to use a subset of the null values or not.
 
         '''
-        dataset = self.get_flood_hazard_sample(data_structure, population, focus, sample=sample)
+        dataset = self.get_flood_hazard_sample(data_structure, population, focus)
 
         self.Add_XY_Values(data_structure, dataset)
         self.discrete = True
@@ -42,7 +54,7 @@ class X_Y:
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
         return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True, sample)
 
-    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, sample=True ):
+    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure):
         '''
         Similar to Flood_hazard_dataset_setup. Uses one Dataframe for flooded/ non-flooded.
         :param data_structure:  Model structure
@@ -50,7 +62,7 @@ class X_Y:
         :param hazardStructure: Model Structure from flood hazard used to predict flood hazard on new sample
         :return:
         '''
-        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False, sample)
+        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False)
         self.Add_XY_Values(data_structure, dataset)
 
         prob = hazardStructure.model.predict_proba(self.X_[hazardStructure.XColumns])
@@ -104,9 +116,13 @@ class X_Y:
         :return: a 1-1 Sample of flooded and non-flooded structures.
         '''
         presence_dataset = df.loc[df[column] > 0]
-        if sample:
-            print("sample", sample)
-            absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset), replace=replacement, random_state=42)
+        if self.sample:
+            if len(presence_dataset)<self.minSampling:
+                absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset)*self.ratio,
+                                                                 replace=replacement, random_state=42)
+            else:
+                absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset),
+                                                                 replace=replacement, random_state=42)
         else:
             absence_dataset = df.loc[df[column] == 0]
 
