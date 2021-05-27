@@ -115,7 +115,8 @@ class raster_sets:
             gc.collect()
         if annualize:
             print(annualize)
-            predictions.asciiFile = np.where(predictions.asciiFile != nodata, annualize(predictions.asciiFile, max=model_structure.max,min= model_structure.min) ), nodata)
+            predictions.asciiFile = np.where(predictions.asciiFile != nodata, annualize(predictions.asciiFile,
+                                                                                        max=model_structure.max,min= model_structure.min) , nodata)
         else:
 
             predictions.asciiFile = np.where(predictions.asciiFile != nodata,  predictions.asciiFile, nodata)
