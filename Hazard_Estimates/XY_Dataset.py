@@ -120,7 +120,7 @@ class X_Y:
         if self.sample:
 
             if len(presence_dataset)<self.minSampling:
-                print(len(presence_dataset), self.minSampling, self.ratio)
+               
                 absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset)*self.ratio,
                                                                  replace=replacement, random_state=42)
             else:
