@@ -25,6 +25,14 @@ class raster_sets:
             self.rasters.append(pool.map(self.load_rasters, files))
             self.rasters=self.rasters[0]
         self.prune_falses()
+    def annualization(self, probability, last_year, first_year):
+       '''
+       Annualizes the probability given a probaility and the first and last year.
+       :param probability: Float
+       :param last_year: int latest year within the sample
+       :param first_year: int first year within the sample
+       '''
+       return  (1 - np.power((1 - probability), (1 / (last_year - first_year + 1))))
 
     def prune_falses(self):
         '''
@@ -107,7 +115,7 @@ class raster_sets:
             gc.collect()
         if annualize:
             print(annualize)
-            predictions.asciiFile = np.where(predictions.asciiFile != nodata, (1 - np.power((1 - predictions.asciiFile) , (1 / (model_structure.max - model_structure.min + 1 )))), nodata)
+            predictions.asciiFile = np.where(predictions.asciiFile != nodata, annualize(predictions.asciiFile, max=model_structure.max,min= model_structure.min) ), nodata)
         else:
 
             predictions.asciiFile = np.where(predictions.asciiFile != nodata,  predictions.asciiFile, nodata)
