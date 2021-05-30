@@ -116,7 +116,7 @@ class raster_sets:
         if annualize:
             print(annualize)
             predictions.asciiFile = np.where(predictions.asciiFile != nodata, self.annualization(predictions.asciiFile,
-                                                                                        max=model_structure.max,min= model_structure.min) , nodata)
+                                                                                        last_year=model_structure.max,first_year= model_structure.min) , nodata)
         else:
 
             predictions.asciiFile = np.where(predictions.asciiFile != nodata,  predictions.asciiFile, nodata)
