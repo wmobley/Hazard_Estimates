@@ -2,7 +2,7 @@
 import pandas as pd
 import numpy as np
 import random as rand
-import Hazard_Estimates.metrics as metrics
+from  .metrics import *
 from copy import *
 
 class X_Y:
@@ -70,7 +70,7 @@ class X_Y:
         self.discrete = True
 
 
-    def Add_XY_Values(self, data_structure, dataset, ):
+    def Add_XY_Values(self, data_structure, dataset, header=False ):
         '''
         For each spatial index load rasters  and get columns.
         Make Sure column values are greater than 0.
@@ -87,18 +87,19 @@ class X_Y:
                 return True
             except ValueError:
                 return False
-
-        if all(RepresentsInt(x) for x in s_index_series):
-                self.X_ = pd.concat(
-                [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
-                                                int(s_index)) for s_index in
-                 s_index_series.unique()])
-        else:
-            s_index: str
-            self.X_ = pd.concat(
-                [data_structure.iterate_rasters(dataset.loc[s_index_series == s_index],
-                                                s_index) for s_index in
-                 s_index_series.unique()])
+        self.X_=data_structure.iterate_rasters(dataset,
+                                                "",header=header) 
+        # if all(RepresentsInt(x) for x in s_index_series):
+        #         self.X_ = pd.concat(
+        #         [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
+        #                                         int(s_index),header=header) for s_index in
+        #          s_index_series.unique()])
+        # else:
+        #     s_index: str
+        #     self.X_ = pd.concat(
+        #         [data_structure.iterate_rasters(dataset.loc[s_index_series == s_index],
+        #                                         s_index,header=header ) for s_index in
+        #          s_index_series.unique()])
         for column in data_structure.XColumns:
             try:
                 self.X_ = self.X_.loc[self.X_[column] >= 0]
@@ -120,7 +121,7 @@ class X_Y:
         if self.sample:
 
             if len(presence_dataset)<self.minSampling:
-               
+                print(len(presence_dataset))
                 absence_dataset = df.loc[df[column] == 0].sample(n=len(presence_dataset)*self.ratio,
                                                                  replace=replacement, random_state=42)
             else:

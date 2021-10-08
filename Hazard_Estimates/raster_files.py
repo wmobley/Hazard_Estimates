@@ -1,7 +1,7 @@
 import numpy as np
 import rasterio
 import os
-
+from rasterio.windows import Window
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 from rasterio.mask import mask
 from rasterio.crs import CRS
@@ -20,18 +20,18 @@ from rasterio.crs import CRS
 class ascii_raster:
 
     ''' Raster Datastructure Built on Raster IO'''
-    def __init__(self,  dataAddress='',extension="", years= [2001, 2006, 2011, 2016],year=-9999,):
+    def __init__(self,  dataAddress='',extension="", years= [2001, 2006, 2011, 2016],year=-9999,header=False):
         self.extension = extension
 
         self.year = year
         self.years= years
         self.dataAddress = dataAddress
 
-        self.load(dataAddress=dataAddress,extension = self.extension, years=years)
+        self.load(dataAddress=dataAddress,extension = self.extension, years=years, header=header)
     def __reduce__(self):
         return (self.__class__, (self.dataAddress, self.extension, self.years ))
 
-    def load(self, dataAddress,extension, years = [2001, 2006, 2011, 2016], ):
+    def load(self, dataAddress,extension, years = [2001, 2006, 2011, 2016], header=False):
         '''
         Loads raster from the dataAdress. Specifically added files are
         :param dataAddress: Location of the raster
@@ -41,11 +41,14 @@ class ascii_raster:
         try:
 
             self.fileName = (dataAddress.split("/")[-1])
-
+            
             self.src = rasterio.open(f"{dataAddress}{extension}")
-            self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
-            self.nrows = self.asciiFile.shape[0]
-            self.ncols = self.asciiFile.shape[1]
+            if header==False:
+                print(header)
+                self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
+            
+            self.nrows = self.src.height
+            self.ncols = self.src.width
             self.year = -9999
 
             for y in years:
@@ -59,6 +62,21 @@ class ascii_raster:
             print (e)
             return False
 
+
+
+    def getXY(self, geometry):
+        read = self.src.read
+        indexes = self.src.indexes
+        row_off, col_off = geometry.X, geometry.Y
+        index = self.src.index
+        row_off, col_off = index(row_off, col_off)
+        if row_off < 0 or col_off < 0 or row_off >= self.src.height or col_off >= self.src.width:
+            values = np.ones((len(indexes),), dtype=self.src.dtypes[0]) * (self.src.nodata or 0)
+        else:
+
+            window = Window(col_off, row_off, 1, 1)
+            values = read(indexes, window=window)
+        return np.ravel(values)[0]
 
     def make_dataset_1D(self):
         '''

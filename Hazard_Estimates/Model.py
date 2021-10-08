@@ -1,14 +1,14 @@
 import os
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 
-from Hazard_Estimates.metrics import *
-from Hazard_Estimates.XY_Dataset import *
+from .metrics import *
+from .XY_Dataset import *
 from joblib import dump, load
 import psutil
 p = psutil.Process()
 pd.set_option('display.float_format', lambda x: '%.3f' % x)
 
-from Hazard_Estimates import Raster_Sets as sets
+from .Raster_Sets import raster_sets as sets
 
 
 reg_model = RandomForestRegressor(n_estimators=100, criterion='mse', max_depth=90,
@@ -195,7 +195,7 @@ class model_framework:
         Y_['predict']= self.rescale_y(  Y_['predict'], data.X_, self.split_model)
         return Y_
 
-    def locate_and_load(self, spatial_index, year_to_load = None):
+    def locate_and_load(self, spatial_index, year_to_load = None, header=False):
         ''' Locate and load rasters
         Create list of drivers and add precipitation variable if they exist.
         Load rasters then remove
@@ -203,9 +203,9 @@ class model_framework:
         :param spatial_index: single index location.
         :return: list of loaded rasters. Numpy array's and locations.
         '''
-
+        
         fileLocation = r"{}/{}".format(self.FileLocation, spatial_index)
-
+        print(fileLocation)
         files = [f'{fileLocation}/{column}'
 
                  for column in self.XColumns]
@@ -220,29 +220,31 @@ class model_framework:
                 year_to_load = self.variable_year_range
 
 
-        raster_sets = sets.raster_sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension, pool=self.pool)
+        raster_sets = sets( files, self.storm, year_range=year_to_load, extension=self.raster_extension, pool=self.pool, header=header)
 
         return raster_sets
 
 
 
-    def iterate_rasters(self, dataset, hucNumber, ):
+    def iterate_rasters(self, dataset, hucNumber,header=False ):
         '''
         Dataframe function to iterate through rasters list and add to Dataframe.
         :param dataset:  Subset of dataframe X_
         :param hucNumber: Spatial index
         :return: Subset of dataframe with all raster variables added.
         '''
-
-        raster_sets = self.locate_and_load(hucNumber)
-
+       
+        print(hucNumber)
+        
+        raster_sets = self.locate_and_load(hucNumber, header=True)
+        # xy= [(s['X'], s['Y']) for s in dataset]
         for r in raster_sets.rasters:
-
-            dataset[r.fileName] = dataset.apply(lambda row: r.get_raster_value(row), axis=1)
+            
+            dataset[r.fileName] =  dataset.apply(lambda row: r.getXY(row), axis=1)
 
         if self.storm != "":
             ### makes sure that all precipitation variables have the same columns. THis will be important for future modelling.
-            print(dataset.columns)
+            
             for hr in [1, 2, 3, 4, 8, 12, 24, 48, 96, 168]:
                 column = f"{self.storm}{hr}hr"
                 if column in dataset.columns:

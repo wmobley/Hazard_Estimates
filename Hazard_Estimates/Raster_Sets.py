@@ -1,12 +1,14 @@
-from Hazard_Estimates import raster_files as rf
+from  .raster_files import ascii_raster as rf
 import pandas as pd
 import numpy as np
 import gc
 from multiprocessing import Pool
 from multiprocessing import cpu_count
 import psutil
+
+
 class raster_sets:
-    def __init__(self, files, storm="", year_range=[], extension=".tif", pool=None):
+    def __init__(self, files, storm="", year_range=[], extension=".tif", pool=None, header=False):
         '''
         Initializes a dataset of rasters, loads them and prunes extraneous data.
         :param files:List of files to load
@@ -19,7 +21,7 @@ class raster_sets:
 
         self.rasters = []
         if pool==None:
-            self.rasters = [self.load_rasters(file) for file in files]
+            self.rasters = [self.load_rasters(file, header) for file in files]
         else:
 
             self.rasters.append(pool.map(self.load_rasters, files))
@@ -42,13 +44,13 @@ class raster_sets:
         self.rasters = [self.prefix(r) for r in self.rasters if r != False]
         return self.rasters
 
-    def load_rasters(self, file):
+    def load_rasters(self, file, header=False):
         '''
         generates a raster data structure, return a loaded raster.
         :param file: Location of the file
         :return:
         '''
-        return rf.ascii_raster(extension = self.extension, dataAddress=file, years = self.year_range)
+        return rf(extension = self.extension, dataAddress=file, years = self.year_range, header=header)
      
 
 
@@ -120,12 +122,9 @@ class raster_sets:
         else:
 
             predictions.asciiFile = np.where(predictions.asciiFile != nodata,  predictions.asciiFile, nodata)
-
-        #
         gc.collect()
-
-
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
         self.rasters[0].save_image(predictions.asciiFile.astype("float32"),location, file, nodata)
         return predictions
+
