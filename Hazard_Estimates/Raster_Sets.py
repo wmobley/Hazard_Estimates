@@ -21,7 +21,7 @@ class raster_sets:
 
         self.rasters = []
         if pool==None:
-            self.rasters = [self.load_rasters(file, header) for file in files]
+            self.rasters = [self.load_rasters(file_, header) for file_ in files]
         else:
 
             self.rasters.append(pool.map(self.load_rasters, files))
@@ -44,13 +44,14 @@ class raster_sets:
         self.rasters = [self.prefix(r) for r in self.rasters if r != False]
         return self.rasters
 
-    def load_rasters(self, file, header=False):
+    def load_rasters(self, file_name, header=False):
         '''
         generates a raster data structure, return a loaded raster.
         :param file: Location of the file
         :return:
         '''
-        return rf(extension = self.extension, dataAddress=file, years = self.year_range, header=header)
+      
+        return rf(extension = self.extension, dataAddress=file_name, years = self.year_range, header=header)
      
 
 

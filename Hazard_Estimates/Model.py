@@ -205,10 +205,11 @@ class model_framework:
         '''
         
         fileLocation = r"{}/{}".format(self.FileLocation, spatial_index)
-        print(fileLocation)
+        
         files = [f'{fileLocation}/{column}'
 
                  for column in self.XColumns]
+        print(files)
         if year_to_load==None:
             if self.Dynamic_rasters != None:
                 for key in self.Dynamic_rasters:
@@ -234,7 +235,6 @@ class model_framework:
         :return: Subset of dataframe with all raster variables added.
         '''
        
-        print(hucNumber)
         
         raster_sets = self.locate_and_load(hucNumber, header=True)
         # xy= [(s['X'], s['Y']) for s in dataset]

@@ -32,7 +32,8 @@ class X_Y:
 
         '''
         dataset = self.get_flood_hazard_sample(data_structure, population, focus)
-
+        
+    
         self.Add_XY_Values(data_structure, dataset)
         self.discrete = True
 
@@ -48,13 +49,13 @@ class X_Y:
         claims_df = claims_df.rename(columns={'x': "X", 'y': 'Y', })
 
 
-        columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', 'huc8']
+        columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss', data_structure.Spatial_Index]
         structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
         return self.create_categorical_samples(pd.concat([claims_df[columns], structure_sample[columns]]), data_structure.YColumn, True, sample)
 
-    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure):
+    def flood_event_dataset_setup(self, data_structure, aggregated, hazardStructure, sample=True):
         '''
         Similar to Flood_hazard_dataset_setup. Uses one Dataframe for flooded/ non-flooded.
         :param data_structure:  Model structure
@@ -62,11 +63,11 @@ class X_Y:
         :param hazardStructure: Model Structure from flood hazard used to predict flood hazard on new sample
         :return:
         '''
-        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False)
+        dataset = self.create_categorical_samples(aggregated, data_structure.YColumn, False,sample)
         self.Add_XY_Values(data_structure, dataset)
 
         prob = hazardStructure.model.predict_proba(self.X_[hazardStructure.XColumns])
-        self.X_['flood_prob'] = metrics.split_probabilities(prob)
+        self.X_['flood_prob'] = split_probabilities(prob)
         self.discrete = True
 
 
@@ -79,27 +80,31 @@ class X_Y:
         :param dataset: Sample of flooded non-flooded structures
         :return:  X Y data for model
         '''
-        s_index_series = dataset[data_structure.Spatial_Index]
-
+        
+  
         def RepresentsInt(s):
             try:
                 int(s)
                 return True
             except ValueError:
                 return False
-        self.X_=data_structure.iterate_rasters(dataset,
+        if data_structure.Spatial_Index==None:
+            self.X_=data_structure.iterate_rasters(dataset,
                                                 "",header=header) 
-        # if all(RepresentsInt(x) for x in s_index_series):
-        #         self.X_ = pd.concat(
-        #         [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
-        #                                         int(s_index),header=header) for s_index in
-        #          s_index_series.unique()])
-        # else:
-        #     s_index: str
-        #     self.X_ = pd.concat(
-        #         [data_structure.iterate_rasters(dataset.loc[s_index_series == s_index],
-        #                                         s_index,header=header ) for s_index in
-        #          s_index_series.unique()])
+        else:
+            s_index_series = dataset[data_structure.Spatial_Index]
+           
+            if all(RepresentsInt(x) for x in s_index):
+                    self.X_ = pd.concat(
+                    [data_structure.iterate_rasters(dataset.loc[s_index_series == int(s_index)],
+                                                    int(s_index),header=header) for s_index in
+                    s_index_series.unique()])
+            else:
+                s_index: str
+                self.X_ = pd.concat(
+                    [data_structure.iterate_rasters(dataset.loc[s_index_series == s_index],
+                                                    s_index,header=header ) for s_index in
+                 s_index_series.unique()])
         for column in data_structure.XColumns:
             try:
                 self.X_ = self.X_.loc[self.X_[column] >= 0]

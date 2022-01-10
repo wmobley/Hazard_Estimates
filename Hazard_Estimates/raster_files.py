@@ -27,22 +27,22 @@ class ascii_raster:
         self.years= years
         self.dataAddress = dataAddress
 
-        self.load(dataAddress=dataAddress,extension = self.extension, years=years, header=header)
+        self.load( years=years, header=header)
     def __reduce__(self):
         return (self.__class__, (self.dataAddress, self.extension, self.years ))
 
-    def load(self, dataAddress,extension, years = [2001, 2006, 2011, 2016], header=False):
+    def load(self, years = [2001, 2006, 2011, 2016], header=False):
         '''
         Loads raster from the dataAdress. Specifically added files are
         :param dataAddress: Location of the raster
         :return:
         '''
-
+        
         try:
 
-            self.fileName = (dataAddress.split("/")[-1])
-            
-            self.src = rasterio.open(f"{dataAddress}{extension}")
+            self.fileName = (self.dataAddress.split("/")[-1])
+           
+            self.src = rasterio.open(f"{self.dataAddress}{self.extension}")
             if header==False:
                 print(header)
                 self.asciiFile = self.src.read(1, out_shape=(1, int(self.src.height), int(self.src.width)))
@@ -78,6 +78,25 @@ class ascii_raster:
             values = read(indexes, window=window)
         return np.ravel(values)[0]
 
+    def value(self, indexes, row):
+        window = Window(row.col_off, row.row_off, 1, 1)
+        
+        return self.src.read(indexes, window=window)[0][0]
+
+    def copy_getXY(self, geometry):
+        read = self.src.read
+        indexes = self.src.indexes
+        
+        index = self.src.index
+        geometry['row_off'],geometry['col_off'] = index(geometry.X, geometry.Y)
+        bool_ = ~((geometry.row_off < 0) | (geometry.col_off < 0) | (geometry.row_off >= self.src.height) | (geometry.col_off >= self.src.width))
+        geometry["values"]=-9999   
+        geometry.loc[bool_,'values'] = geometry.loc[bool_].apply(lambda row:self.value(indexes, row), axis=1)        
+        # values = self.value(indexes, window)
+        
+        # values = read(indexes, window=geometry['window'])
+        
+        return geometry['values']
     def make_dataset_1D(self):
         '''
         convert from 2-d numpy array to 1-d.

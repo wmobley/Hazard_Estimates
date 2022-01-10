@@ -169,169 +169,171 @@ def weighted_accum(in_dir, weight, out_directory, out_raster, boundary_geom):
                          out_raster)
         # os.remove(os.path.join(out_dir, "temp.tif"))
 
-
-# Loop through each polygon in shapefile.
-for index in shapefile.index:
-
-    try:
-
-        geom = [shapefile.iloc[index].geometry]
-        huc12 = shapefile.iloc[index].HUC12
-    except:
-        continue
-    print(huc12)
-
-    dst_crs = 'EPSG:5070'
-
-    out_dir = f"Spatial_Index/huc{huc12[:-4]}/huc{huc12}"
-
-    # if os.path.exists(os.path.join(out_dir, f'Distance2Streams.tif')): continue #This checks to see if I've iterated over the data. If I have don't do it again.
-    if os.path.exists(f"Spatial_Index/huc{huc12[:-4]}") == False: os.makedirs(f"Spatial_Index/huc{huc12[:-4]}")
-    if os.path.exists(out_dir) == False: os.makedirs(out_dir)  # check to see if this directory exists if not make it.
-    for topography in ['hand', 'elevation']:
-        if os.path.exists(os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif")) == False:
-            print(os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif"))
-            in_hand = os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}.tif")
-            out_hand = os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif")
-            with rasterio.open(in_hand) as src:
-                transform, width, height = calculate_default_transform(
-                    src.crs, dst_crs, src.width, src.height, *src.bounds)
-                kwargs = src.meta.copy()
-                kwargs.update({
-                    'crs': dst_crs,
-                    'transform': transform,
-                    'width': width,
-                    'height': height
-                })
-
-                with rasterio.open(out_hand, 'w', **kwargs) as dst:
-                    for i in range(1, src.count + 1):
-                        reproject(
-                            source=rasterio.band(src, i),
-                            destination=rasterio.band(dst, i),
-                            src_transform=src.transform,
-                            src_crs=src.crs,
-                            dst_transform=transform,
-                            dst_crs=dst_crs,
-                            resampling=Resampling.bilinear)
-
-        if topography == "elevation":
-            clip_to_boundary(
-                f"RawFiles/Hand/{huc12[:-6]}",
-                out_dir, geom, f"{topography}_proj.tif", f"dem.tif")  # Clip Hand
-        else:
-            clip_to_boundary(
-                f"RawFiles/Hand/{huc12[:-6]}",
-                out_dir, geom, f"{topography}_proj.tif", f"{topography}.tif")  # Clip Hand
-
-    # clip_to_boundary("RawFiles/Topography", out_dir, geom, f"elevation.tif",
-    #                  f"dem.tif")
-
-    # clip_to_boundary("RawFiles/Topography", out_dir, geom, f"texas_slope.tif",
-    #                  f"slope.tif")
-    gc.collect()  # clean up ram
-    in_elevation = os.path.join(out_dir, f"dem.tif")
-    dem = rd.LoadGDAL(in_elevation)
-    rd.FillDepressions(dem, epsilon=True, in_place=True)
-    slope = rd.TerrainAttribute(dem, attrib='slope_riserun')
-    rd.SaveGDAL(os.path.join(out_dir, 'slope.tif'), slope)
-    accum_d8 = rd.FlowAccumulation(dem, method='D8')
-    rd.SaveGDAL(os.path.join(out_dir, 'FlowAccumulation.tif'), accum_d8)
-
-    # Once slope and flow acculation are clipped then TWI can be calculated.
-    clip_twi(out_dir)
-    # This clips rainfall intensities for specific storms. Not necessary for the first analysis but needed later down the line.
-    # for hr in [1, 2, 3, 4, 8, 12, 24, ]:
-    #     for storm in [
-    #         'taxday',
-    #         'harvey']:
-    #         clip_to_boundary(r"F:\test\{}\intensity\projected".format(storm), out_dir, geom,
-    #                          f"{storm}{hr}hr.tif",
-    #                          f"{storm}{hr}hr.tif")
-
-    # Clip KSAT and then generate the accumulated KSAT.
-    clip_to_boundary(r"RawFiles", out_dir, geom, "Ksat.tif",
-                     f"ksat.tif")
-    weighted_accum(out_dir,
-                   "ksat.tif",
-                   out_dir, 'AverageKSAT.tif', geom)
-
-    # Thesea are the dynamic rasters. Using Imperviousness and Landcover.
-    # It iterates over each year, and then clips a given raster. Impervious 2016 was named different so it stands along
-    for i in [
-        2001, 2004, 2006,
-        2008, 2011, 2013,
-        2016]:
-        if i == 2016:
-            clip_to_boundary("RawFiles/Impervious", out_dir, geom, f"impervious2016.tif",
-                             f"impervious{i}.tif")
-        elif i in [2001, 2006, 2011]:
-            clip_to_boundary(r"RawFiles/Impervious/nlcd_{}_impervious_2011_edition_2014_10_10".format(i),
-                             out_dir, geom,
-                             f"nlcd_{i}_impervious_2011_edition_2014_10_10.img",
-                             f"impervious{i}.tif")
-        clip_roughness(out_dir, geom, i)
-
-        weighted_accum(out_dir,
-                       f"roughness{i}.tif",
-                       out_dir, f'AverageRoughness{i}.tif', geom)
-
-    # These probabilistic precipitations. 12hr and 60 minutes. We use three probabilities 25, 100, and 500 year.
-    for year in [25, 100, 500]:
-        for hour in ["12ha", "60ma"]:
-            clip_to_boundary("RawFiles/Precip", out_dir, geom, f"Precip{year}yr_{hour}.tif",
-                             f"Precip{year}_{hour}.tif")
-    # This for loop calculates euclidean distance.
-    for water in ['Lakes', "Coast", "Streams"]:
-        clip_to_boundary("RawFiles", out_dir, geom, f"{water}.tif",
-                         f"{water}.tif")
-
-        with rasterio.open(os.path.join(out_dir, f"{water}.tif"))as src:
-            img = src.read(1)
-        meta = src.meta.copy()
-        # Inverse the image for the euclidean analysis.
-        img = np.where(img == 1, 0, 1)
-
-        # This is a check to ensure that coastlines exist in image and then calculates distance.
-        if 0 in np.unique(img):
-            img = ndimage.morphology.distance_transform_edt(img)
-        meta.update({"dtype": "int16"})
-        out_img = img.astype("int16")
-
-        with rasterio.open(os.path.join(out_dir, f"D{water}.tif"), 'w+', **meta) as out:
-            out.write_band(1, out_img)
-        clip_to_boundary(out_dir, out_dir, geom, f"D{water}.tif",
-                         f"Distance2{water}.tif")
-        os.remove(os.path.join(out_dir, f"D{water}.tif"))
-        os.remove(os.path.join(out_dir, f"{water}.tif"))
-
-
 def make_VRT(file, directory):
     sub_directories = [os.path.join(directory, name, file) for name in os.listdir(directory) if
                        os.path.isdir(os.path.join(directory, name))]
     gdal.BuildVRTOptions(VRTNodata="nan")
     gdal.BuildVRT(os.path.join(directory, f"{file[:-4]}.vrt"), sub_directories)
 
+    
+if __name__ =="__main__":
+    # Loop through each polygon in shapefile.
+    for index in shapefile.index:
 
-for huc in shapefile.HUC12.apply(lambda row: row[:8]):
-    dir = f"Spatial_Index/huc{huc}"
-    for year in [
-        2001, 2004, 2006,
-        2008, 2011, 2013,
-        2016]:
-        make_VRT(f'AverageRoughness{year}.tif', dir)
-        make_VRT(f'impervious{year}.tif', dir)
-        make_VRT(f"roughness{year}.tif", dir)
-    for year in [25, 100, 500]:
-        for hour in ["12ha", "60ma"]:
-            make_VRT(f"Precip{year}_{hour}.tif", dir)
-    for water in ['Lakes', "Coast", "Streams"]:
-        make_VRT(f"Distance2{water}.tif", dir)
-    for file in [
-        f"FlowAccumulation.tif",
-        f"slope.tif",
-        f"dem.tif",
-        'AverageKSAT.tif',
-        'hand.tif']:
-        make_VRT(file, dir)
+        try:
+
+            geom = [shapefile.iloc[index].geometry]
+            huc12 = shapefile.iloc[index].HUC12
+        except:
+            continue
+        print(huc12)
+
+        dst_crs = 'EPSG:5070'
+
+        out_dir = f"Spatial_Index/huc{huc12[:-4]}/huc{huc12}"
+
+        # if os.path.exists(os.path.join(out_dir, f'Distance2Streams.tif')): continue #This checks to see if I've iterated over the data. If I have don't do it again.
+        if os.path.exists(f"Spatial_Index/huc{huc12[:-4]}") == False: os.makedirs(f"Spatial_Index/huc{huc12[:-4]}")
+        if os.path.exists(out_dir) == False: os.makedirs(out_dir)  # check to see if this directory exists if not make it.
+        for topography in ['hand', 'elevation']:
+            if os.path.exists(os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif")) == False:
+                print(os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif"))
+                in_hand = os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}.tif")
+                out_hand = os.path.join(f"RawFiles/Hand/{huc12[:-6]}", f"{topography}_proj.tif")
+                with rasterio.open(in_hand) as src:
+                    transform, width, height = calculate_default_transform(
+                        src.crs, dst_crs, src.width, src.height, *src.bounds)
+                    kwargs = src.meta.copy()
+                    kwargs.update({
+                        'crs': dst_crs,
+                        'transform': transform,
+                        'width': width,
+                        'height': height
+                    })
+
+                    with rasterio.open(out_hand, 'w', **kwargs) as dst:
+                        for i in range(1, src.count + 1):
+                            reproject(
+                                source=rasterio.band(src, i),
+                                destination=rasterio.band(dst, i),
+                                src_transform=src.transform,
+                                src_crs=src.crs,
+                                dst_transform=transform,
+                                dst_crs=dst_crs,
+                                resampling=Resampling.bilinear)
+
+            if topography == "elevation":
+                clip_to_boundary(
+                    f"RawFiles/Hand/{huc12[:-6]}",
+                    out_dir, geom, f"{topography}_proj.tif", f"dem.tif")  # Clip Hand
+            else:
+                clip_to_boundary(
+                    f"RawFiles/Hand/{huc12[:-6]}",
+                    out_dir, geom, f"{topography}_proj.tif", f"{topography}.tif")  # Clip Hand
+
+        # clip_to_boundary("RawFiles/Topography", out_dir, geom, f"elevation.tif",
+        #                  f"dem.tif")
+
+        # clip_to_boundary("RawFiles/Topography", out_dir, geom, f"texas_slope.tif",
+        #                  f"slope.tif")
+        gc.collect()  # clean up ram
+        in_elevation = os.path.join(out_dir, f"dem.tif")
+        dem = rd.LoadGDAL(in_elevation)
+        rd.FillDepressions(dem, epsilon=True, in_place=True)
+        slope = rd.TerrainAttribute(dem, attrib='slope_riserun')
+        rd.SaveGDAL(os.path.join(out_dir, 'slope.tif'), slope)
+        accum_d8 = rd.FlowAccumulation(dem, method='D8')
+        rd.SaveGDAL(os.path.join(out_dir, 'FlowAccumulation.tif'), accum_d8)
+
+        # Once slope and flow acculation are clipped then TWI can be calculated.
+        clip_twi(out_dir)
+        # This clips rainfall intensities for specific storms. Not necessary for the first analysis but needed later down the line.
+        # for hr in [1, 2, 3, 4, 8, 12, 24, ]:
+        #     for storm in [
+        #         'taxday',
+        #         'harvey']:
+        #         clip_to_boundary(r"F:\test\{}\intensity\projected".format(storm), out_dir, geom,
+        #                          f"{storm}{hr}hr.tif",
+        #                          f"{storm}{hr}hr.tif")
+
+        # Clip KSAT and then generate the accumulated KSAT.
+        clip_to_boundary(r"RawFiles", out_dir, geom, "Ksat.tif",
+                        f"ksat.tif")
+        weighted_accum(out_dir,
+                    "ksat.tif",
+                    out_dir, 'AverageKSAT.tif', geom)
+
+        # Thesea are the dynamic rasters. Using Imperviousness and Landcover.
+        # It iterates over each year, and then clips a given raster. Impervious 2016 was named different so it stands along
+        for i in [
+            2001, 2004, 2006,
+            2008, 2011, 2013,
+            2016]:
+            if i == 2016:
+                clip_to_boundary("RawFiles/Impervious", out_dir, geom, f"impervious2016.tif",
+                                f"impervious{i}.tif")
+            elif i in [2001, 2006, 2011]:
+                clip_to_boundary(r"RawFiles/Impervious/nlcd_{}_impervious_2011_edition_2014_10_10".format(i),
+                                out_dir, geom,
+                                f"nlcd_{i}_impervious_2011_edition_2014_10_10.img",
+                                f"impervious{i}.tif")
+            clip_roughness(out_dir, geom, i)
+
+            weighted_accum(out_dir,
+                        f"roughness{i}.tif",
+                        out_dir, f'AverageRoughness{i}.tif', geom)
+
+        # These probabilistic precipitations. 12hr and 60 minutes. We use three probabilities 25, 100, and 500 year.
+        for year in [25, 100, 500]:
+            for hour in ["12ha", "60ma"]:
+                clip_to_boundary("RawFiles/Precip", out_dir, geom, f"Precip{year}yr_{hour}.tif",
+                                f"Precip{year}_{hour}.tif")
+        # This for loop calculates euclidean distance.
+        for water in ['Lakes', "Coast", "Streams"]:
+            clip_to_boundary("RawFiles", out_dir, geom, f"{water}.tif",
+                            f"{water}.tif")
+
+            with rasterio.open(os.path.join(out_dir, f"{water}.tif"))as src:
+                img = src.read(1)
+            meta = src.meta.copy()
+            # Inverse the image for the euclidean analysis.
+            img = np.where(img == 1, 0, 1)
+
+            # This is a check to ensure that coastlines exist in image and then calculates distance.
+            if 0 in np.unique(img):
+                img = ndimage.morphology.distance_transform_edt(img)
+            meta.update({"dtype": "int16"})
+            out_img = img.astype("int16")
+
+            with rasterio.open(os.path.join(out_dir, f"D{water}.tif"), 'w+', **meta) as out:
+                out.write_band(1, out_img)
+            clip_to_boundary(out_dir, out_dir, geom, f"D{water}.tif",
+                            f"Distance2{water}.tif")
+            os.remove(os.path.join(out_dir, f"D{water}.tif"))
+        os.remove(os.path.join(out_dir, f"{water}.tif"))
+
+
+
+
+    for huc in shapefile.HUC12.apply(lambda row: row[:8]):
+        dir = f"Spatial_Index/huc{huc}"
+        for year in [
+            2001, 2004, 2006,
+            2008, 2011, 2013,
+            2016]:
+            make_VRT(f'AverageRoughness{year}.tif', dir)
+            make_VRT(f'impervious{year}.tif', dir)
+            make_VRT(f"roughness{year}.tif", dir)
+        for year in [25, 100, 500]:
+            for hour in ["12ha", "60ma"]:
+                make_VRT(f"Precip{year}_{hour}.tif", dir)
+        for water in ['Lakes', "Coast", "Streams"]:
+            make_VRT(f"Distance2{water}.tif", dir)
+        for file in [
+            f"FlowAccumulation.tif",
+            f"slope.tif",
+            f"dem.tif",
+            'AverageKSAT.tif',
+            'hand.tif']:
+            make_VRT(file, dir)
 
