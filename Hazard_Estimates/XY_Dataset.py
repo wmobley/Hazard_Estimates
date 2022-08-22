@@ -49,8 +49,10 @@ class X_Y:
         claims_df = claims_df.rename(columns={'x': "X", 'y': 'Y', })
 
         if data_structure.Spatial_Index!= None:
-            columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss',data_structure.Spatial_Index ]
-        else: columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss' ]
+            columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss',
+                       'date',data_structure.Spatial_Index ]
+        else: columns = ['X', 'Y', data_structure.YColumn, 'year_of_loss',
+                         'date' ]
         structure_sample = df
         structure_sample['year_of_loss'] = structure_sample.apply(
             lambda x: rand.randint(claims_df.year_of_loss.min(), claims_df.year_of_loss.max()), axis=1)
