@@ -123,7 +123,7 @@ class ascii_raster:
         except:
             return -9999
 
-    def save_image(self, asciiFile,location, file, nodata):
+    def save_image(self, asciiFile,location, nodata):
         '''
         Save file image
         :param asciiFile: 2d array

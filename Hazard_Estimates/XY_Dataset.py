@@ -21,17 +21,17 @@ class X_Y:
     def set_minSampling(self, min):
         self.minSampling=min
 
-    def flood_hazard_dataset_setup(self, data_structure, population, focus):
+    def flood_hazard_dataset_setup(self, data_structure, presence, background):
         '''
         Get Flood Hazard Sample
         Add XY Values
         :param data_structure: Model data structure.
-        :param population: aggregated dataframe. Used for non-flooded areas
-        :param focus: Point based data frame. Used for Flooded areas.
+        :param presence: aggregated dataframe. Used for flooded areas
+        :param background: Point based data frame. Used for non-Flooded areas.
         :param sample: Whether to use a subset of the null values or not.
 
         '''
-        dataset = self.get_flood_hazard_sample(data_structure, population, focus)
+        dataset = self.get_flood_hazard_sample(data_structure, presence, background)
         
     
         self.Add_XY_Values(data_structure, dataset)

@@ -87,7 +87,7 @@ class raster_sets:
         return dataset
 
     def generate_probability_raster(self, model_structure, location, ignore_column,
-                                    nodata, file,  annualize = False):
+                                    nodata,  annualize = False):
         '''
 
         :param model: SKlearn Model
@@ -126,6 +126,6 @@ class raster_sets:
         gc.collect()
         predictions.return_dataset_2d(self.rasters[0].nrows)
         gc.collect()
-        self.rasters[0].save_image(predictions.asciiFile.astype("float32"),location, file, nodata)
+        self.rasters[0].save_image(predictions.asciiFile.astype("float32"),location,  nodata)
         return predictions
 
