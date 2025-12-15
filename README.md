@@ -1,5 +1,6 @@
 
 # Hazards Estimates library
+[![DOI](https://zenodo.org/badge/258555463.svg)](https://doi.org/10.5281/zenodo.17940660)
 
 Framework for using ML classification models on point locations across rasters. 
 
